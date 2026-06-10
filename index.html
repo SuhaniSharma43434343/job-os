@@ -1175,19 +1175,33 @@ function renderJobList() {
   let filtered = JOBS.filter(j => {
     const s = currentFilter.search.toLowerCase();
     const matchSearch = !s || j.title.toLowerCase().includes(s) || j.company.toLowerCase().includes(s);
-    const matchPlatform = currentFilter.platforms.size === 0 || currentFilter.platforms.has(j.platform);
-    const matchType = currentFilter.types.size === 0 || currentFilter.types.has(j.type);
+    
+    const matchPlatform = currentFilter.platforms.size === 0 || 
+      Array.from(currentFilter.platforms).some(p => j.platform.toLowerCase().includes(p.toLowerCase()));
+      
+    const matchType = currentFilter.types.size === 0 || 
+      Array.from(currentFilter.types).some(t => {
+        const jt = j.type.toLowerCase();
+        const filterT = t.toLowerCase();
+        if (filterT === 'full-time') return jt.includes('full') || jt.includes('permanent');
+        if (filterT === 'internship') return jt.includes('intern') || jt.includes('co-op');
+        if (filterT === 'remote') return j.remote || jt.includes('remote');
+        if (filterT === 'hybrid') return jt.includes('hybrid');
+        return jt.includes(filterT);
+      });
+      
     return matchSearch && matchPlatform && matchType;
   });
 
-  document.getElementById('job-count').textContent = filtered.length;
+  const showList = filtered.slice(0, 10);
+  document.getElementById('job-count').textContent = showList.length;
   document.getElementById('selected-count').textContent = selectedJobs.size;
   document.getElementById('apply-selected-btn').style.display = selectedJobs.size > 0 ? '' : 'none';
   if (selectedJobs.size > 0) document.getElementById('apply-selected-btn').textContent = `✅ Apply to ${selectedJobs.size} Selected`;
 
   const scoreClass = s => s>=80?'score-high':s>=65?'score-mid':'score-low';
 
-  document.getElementById('jobs-list').innerHTML = filtered.map(j => `
+  document.getElementById('jobs-list').innerHTML = showList.map(j => `
     <div class="job-card ${selectedJobs.has(j.id)?'selected':''}" id="job-${j.id}">
       <div class="checkbox" onclick="toggleJob('${j.id}',event)">
         <span class="checkbox-check">✓</span>
@@ -1296,9 +1310,9 @@ async function scanJobs() {
   if (!apiKey) {
     showToast(`⚠️ No API Key found. Generating Mock Demo Jobs for ${role}...`, 'warning');
     const newJobs = [
-      { id: Date.now(), title: `Lead ${role}`, company: 'TechNova Solutions', location: location, salary: '₹25-45 LPA', platform: 'LinkedIn', type: 'Full-time', posted: '2h ago', score: 98, remote: false, description: 'Mock job description for demonstration purposes.' },
-      { id: Date.now()+1, title: `Senior ${role}`, company: 'CloudSync', location: 'Remote', salary: '₹18-35 LPA', platform: 'Indeed', type: 'Full-time', posted: '5h ago', score: 85, remote: true, description: 'Mock job description for demonstration purposes.' },
-      { id: Date.now()+2, title: `${role} - Core Focus`, company: 'DataFlow Inc', location: location, salary: 'Competitive', platform: 'Glassdoor', type: 'Full-time', posted: '1d ago', score: 77, remote: false, description: 'Mock job description for demonstration purposes.' }
+      { id: Date.now(), title: `Lead ${role}`, company: 'TechNova Solutions', location: location, salary: '₹25-45 LPA', platform: 'LinkedIn', type: 'Full-time', posted: '2h ago', score: 98, remote: false, description: 'Mock job description for demonstration purposes.', applyLink: 'https://careers.google.com' },
+      { id: Date.now()+1, title: `Senior ${role}`, company: 'CloudSync', location: 'Remote', salary: '₹18-35 LPA', platform: 'Indeed', type: 'Full-time', posted: '5h ago', score: 85, remote: true, description: 'Mock job description for demonstration purposes.', applyLink: 'https://careers.microsoft.com' },
+      { id: Date.now()+2, title: `${role} - Core Focus`, company: 'DataFlow Inc', location: location, salary: 'Competitive', platform: 'Glassdoor', type: 'Full-time', posted: '1d ago', score: 77, remote: false, description: 'Mock job description for demonstration purposes.', applyLink: 'https://remotefirst.com' }
     ];
     JOBS.length = 0;
     JOBS.push(...newJobs);
@@ -1335,12 +1349,13 @@ async function scanJobs() {
           logoBg: '#EDE9FE',
           location: `${item.job_city || ''} ${item.job_country || ''}`.trim() || 'Remote',
           salary: item.job_max_salary ? `₹${(item.job_max_salary/100000).toFixed(1)} LPA` : (item.job_min_salary ? `₹${(item.job_min_salary/100000).toFixed(1)} LPA` : 'Competitive'),
-          platform: 'JSearch',
+          platform: item.job_publisher || 'LinkedIn',
           type: item.job_employment_type || 'Full-time',
           posted: item.job_posted_at_datetime_utc ? new Date(item.job_posted_at_datetime_utc).toLocaleDateString() : 'Recent',
           score: score,
           remote: item.job_is_remote || false,
-          description: item.job_description || ''
+          description: item.job_description || '',
+          applyLink: item.job_apply_link || item.job_google_link || 'https://www.linkedin.com/jobs'
         };
       });
       
