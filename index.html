@@ -486,8 +486,42 @@
           </div>
           <div class="card">
             <div style="font-weight:800; font-size:14px; margin-bottom:14px">🎯 Job Preferences</div>
-            <div class="form-group"><label class="form-label">Target Roles (comma-separated)</label><input id="s-roles" class="form-input" value="Software Engineer, SDE Intern, Full Stack Developer"></div>
-            <div class="form-group"><label class="form-label">Locations (comma-separated)</label><input id="s-locations" class="form-input" value="Bangalore, Hyderabad, Remote"></div>
+            <div class="form-group">
+              <label class="form-label">Target Roles (comma-separated)</label>
+              <input id="s-roles" class="form-input" list="role-suggestions" placeholder="e.g. Software Engineer, SDE Intern">
+              <datalist id="role-suggestions">
+                <option value="Software Engineer">
+                <option value="SDE Intern">
+                <option value="Full Stack Developer">
+                <option value="Frontend Developer">
+                <option value="Backend Developer">
+                <option value="Data Scientist">
+                <option value="Data Engineer">
+                <option value="Machine Learning Engineer">
+                <option value="Product Manager">
+                <option value="UI/UX Designer">
+                <option value="DevOps Engineer">
+                <option value="Cloud Engineer">
+              </datalist>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Locations (comma-separated)</label>
+              <input id="s-locations" class="form-input" list="location-suggestions" placeholder="e.g. Bangalore, Hyderabad, Remote">
+              <datalist id="location-suggestions">
+                <option value="Bangalore">
+                <option value="Hyderabad">
+                <option value="Pune">
+                <option value="Mumbai">
+                <option value="Chennai">
+                <option value="Delhi NCR">
+                <option value="Gurgaon">
+                <option value="Noida">
+                <option value="Remote">
+                <option value="San Francisco">
+                <option value="New York">
+                <option value="London">
+              </datalist>
+            </div>
             <div class="form-group"><label class="form-label">Skills (comma-separated)</label><input id="s-skills" class="form-input" placeholder="e.g. React, Node.js, Python, AWS"></div>
             <div class="form-group"><label class="form-label">Expected Salary</label><input id="s-salary" class="form-input" value="₹15-35 LPA"></div>
             <div class="form-group"><label class="form-label">Experience Level</label>
@@ -798,7 +832,7 @@ function notifyProfileSubscribers(profile) {
 // ════════════════════════════════════════
 const GROQ_KEY = '';
 const GROQ_MODEL = 'llama-3.3-70b-versatile';
-const RAPIDAPI_KEY = '';
+const RAPIDAPI_KEY = 'dd07b80f1fmshec85b5599b446a9p1af665jsnbc0f328f1e00';
 
 // ════════════════════════════════════════
 // DATA
@@ -918,7 +952,7 @@ function renderDashboard() {
   const h = new Date().getHours();
   const greet = h < 12 ? '🌸 Good morning' : h < 17 ? '☀️ Good afternoon' : '🌙 Good evening';
   const profile = getUserProfile();
-  const firstName = profile.name ? profile.name.split(' ')[0] : 'Developer';
+  const firstName = profile.name ? profile.name.split(' ')[0] : 'Job Seeker';
   const firstRole = profile.targetRoles.length > 0 ? profile.targetRoles[0] : "Software Engineer";
   document.getElementById('dash-greeting').textContent = `${greet}, ${firstName}! 🐾`;
   document.getElementById('dash-date').textContent = new Date().toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long'});
@@ -999,11 +1033,53 @@ function renderDashboard() {
   `).join('');
 
   // Todo list
-  const todos = [
-    {done:true, text:`Tailor Resume B for ${firstRole} role at Google`, tag:'2 days left', tagColor:'badge-purple'},
-    {done:false, text:`Prepare for ${firstRole} interview at Swiggy`, tag:'Tomorrow', tagColor:'badge-pink'},
-    {done:false, text:`Practice coding questions matching stack: ${profile.skills.slice(0, 3).join(', ') || 'React, Python, AWS'}`, tag:null, tagColor:null},
-  ];
+  const todos = [];
+  
+  // 1. Practice questions matching stack
+  const skillsList = profile.skills.length > 0 ? profile.skills.slice(0, 3).join(', ') : 'React, Python, AWS';
+  todos.push({
+    done: false,
+    text: `Practice interview questions matching stack: ${skillsList}`,
+    tag: 'Daily Prep',
+    tagColor: 'badge-purple'
+  });
+
+  // 2. Prepare for upcoming interview
+  const upcomingInt = deadlines.find(d => d.type === 'Interview');
+  if (upcomingInt) {
+    todos.push({
+      done: false,
+      text: `Prepare for ${upcomingInt.role} interview at ${upcomingInt.company}`,
+      tag: 'Upcoming',
+      tagColor: 'badge-pink'
+    });
+  } else {
+    todos.push({
+      done: false,
+      text: `Prepare for a mock ${firstRole} interview`,
+      tag: 'Mock Prep',
+      tagColor: 'badge-pink'
+    });
+  }
+
+  // 3. Tailor resume
+  const savedApp = trackerApps.find(a => a.status === 'Saved' || a.status === 'Applied');
+  if (savedApp) {
+    todos.push({
+      done: true,
+      text: `Tailor Resume for ${savedApp.role} role at ${savedApp.company}`,
+      tag: 'Completed',
+      tagColor: 'badge-green'
+    });
+  } else {
+    todos.push({
+      done: true,
+      text: `Tailor Resume for ${firstRole} role at Google`,
+      tag: 'Completed',
+      tagColor: 'badge-green'
+    });
+  }
+
   document.getElementById('todo-list').innerHTML = todos.map((t,i) => `
     <div style="display:flex; gap:10px; align-items:flex-start; padding:8px 0; border-bottom:1px solid var(--border)">
       <div class="checkbox" style="margin-top:1px; ${t.done?'background:var(--purple); border-color:var(--purple)':''}" onclick="toggleTodo(this)">
@@ -1041,7 +1117,23 @@ let puppeteerInterval = null;
 function startPuppeteerLog() {
   const el = document.getElementById('puppeteer-log');
   if (!el) return;
-  const logs = ['> Launching browser...','> Navigating to linkedin.com...','> Logged in ✓','> Searching: "SDE Intern Bangalore"...','> Found 47 results','> Filtering by: Easy Apply...','> Applying to Google SDE Intern...','> Filling form fields...','> Uploading tailored resume...','> Submitted! ✓','> Waiting 3s...','> Applying to Microsoft SWE...'];
+  const profile = getUserProfile();
+  const firstRole = profile.targetRoles.length > 0 ? profile.targetRoles[0] : "Software Engineer";
+  const firstLoc = profile.preferredLocations.length > 0 ? profile.preferredLocations[0] : "Bangalore";
+  const logs = [
+    `> Launching browser...`,
+    `> Navigating to linkedin.com...`,
+    `> Logged in ✓`,
+    `> Searching: "${firstRole} in ${firstLoc}"...`,
+    `> Found 47 results`,
+    `> Filtering by: Easy Apply...`,
+    `> Applying to Google ${firstRole}...`,
+    `> Filling form fields...`,
+    `> Uploading tailored resume...`,
+    `> Submitted! ✓`,
+    `> Waiting 3s...`,
+    `> Applying to Microsoft ${firstRole}...`
+  ];
   let i = 0;
   el.innerHTML = '';
   if (puppeteerInterval) clearInterval(puppeteerInterval);
@@ -1193,14 +1285,23 @@ function applySelected() {
 async function scanJobs() {
   const profile = getUserProfile();
   const apiKey = profile.apiKeys?.rapidapiKey || RAPIDAPI_KEY;
-  if (!apiKey) {
-    showToast('⚠️ RapidAPI Key missing in Settings!', 'error');
-    return;
-  }
-  
   const role = profile.targetRoles.length > 0 ? profile.targetRoles[0] : "Software Engineer";
   const location = profile.preferredLocations.length > 0 ? profile.preferredLocations[0] : "Bangalore";
   const query = `${role} in ${location}`;
+
+  if (!apiKey) {
+    showToast(`⚠️ No API Key found. Generating Mock Demo Jobs for ${role}...`, 'warning');
+    const newJobs = [
+      { id: Date.now(), title: `Lead ${role}`, company: 'TechNova Solutions', location: location, salary: '₹25-45 LPA', platform: 'LinkedIn', type: 'Full-time', posted: '2h ago', score: 98, remote: false, description: 'Mock job description for demonstration purposes.' },
+      { id: Date.now()+1, title: `Senior ${role}`, company: 'CloudSync', location: 'Remote', salary: '₹18-35 LPA', platform: 'Indeed', type: 'Full-time', posted: '5h ago', score: 85, remote: true, description: 'Mock job description for demonstration purposes.' },
+      { id: Date.now()+2, title: `${role} - Core Focus`, company: 'DataFlow Inc', location: location, salary: 'Competitive', platform: 'Glassdoor', type: 'Full-time', posted: '1d ago', score: 77, remote: false, description: 'Mock job description for demonstration purposes.' }
+    ];
+    JOBS.length = 0;
+    JOBS.push(...newJobs);
+    localStorage.setItem('jobos-jobs', JSON.stringify(JOBS));
+    renderJobs();
+    return;
+  }
   
   showToast(`🔄 Scanning live jobs for "${query}"...`, 'info');
   
@@ -1379,12 +1480,19 @@ async function doTailor() {
   out.innerHTML = '<div style="text-align:center; padding:40px; color:var(--text-2)"><div class="spinner spinner-purple" style="width:32px;height:32px;border-width:3px;margin:0 auto 12px"></div><div>Gemini AI is tailoring your resume...</div></div>';
 
   try {
-    const prompt = `You are a resume expert. Given this job description:\n\n${jd}\n\nRewrite these resume bullet points to maximize ATS match and keyword alignment. Make them quantified and impact-focused:\n\n• Developed REST APIs using Node.js\n• Built React components for dashboard\n• Worked with MongoDB databases\n\nReturn ONLY the 3 improved bullet points, nothing else.`;
+    const profile = getUserProfile();
+    const skills = profile.skills.length > 0 ? profile.skills : ['Javascript', 'React', 'Node.js', 'SQL'];
+    const bullet1 = `Developed core projects and systems utilizing ${skills[0] || 'software development techniques'}.`;
+    const bullet2 = `Collaborated with cross-functional teams to design and implement features using ${skills[1] || 'industry best practices'}.`;
+    const bullet3 = `Optimized workflows and resolved bottlenecks using ${skills[2] || 'problem-solving methodologies'} and ${skills[3] || 'analytical tools'}.`;
+    const originalBullets = `• ${bullet1}\n• ${bullet2}\n• ${bullet3}`;
+
+    const prompt = `You are a resume expert. Given this job description:\n\n${jd}\n\nRewrite these resume bullet points to maximize ATS match and keyword alignment. Make them quantified and impact-focused:\n\n${originalBullets}\n\nReturn ONLY the 3 improved bullet points, nothing else.`;
     const result = await callGemini(prompt);
     out.innerHTML = `
       <div style="margin-bottom:12px">
         <div style="font-size:11px; font-weight:700; color:var(--text-3); text-transform:uppercase; margin-bottom:6px">Original</div>
-        <div class="card card-sm" style="font-family:monospace; font-size:12px; color:var(--text-2); white-space:pre-wrap; background:rgba(252,165,165,0.06); border-color:rgba(252,165,165,0.2)">• Developed REST APIs using Node.js\n• Built React components for dashboard\n• Worked with MongoDB databases</div>
+        <div class="card card-sm" style="font-family:monospace; font-size:12px; color:var(--text-2); white-space:pre-wrap; background:rgba(252,165,165,0.06); border-color:rgba(252,165,165,0.2)">${originalBullets}</div>
       </div>
       <div style="margin-bottom:14px">
         <div style="font-size:11px; font-weight:700; color:var(--text-3); text-transform:uppercase; margin-bottom:6px">✨ Tailored by Gemini</div>
@@ -1435,7 +1543,7 @@ async function doGenCoverLetter() {
     const senderRoles = profile.targetRoles.join(', ') || "Software Engineer";
     const defaultSkills = profile.skills.length > 0 ? profile.skills.join(', ') : (selectedResume?.skills?.join(', ') || "React, Node.js, Python");
 
-    const prompt = `Write a professional, personalized cover letter for a ${title||'software engineering'} position. The job description is:\n\n${jd}\n\nThe candidate is ${senderName}, a ${senderExp} seeking ${senderRoles} roles, with experience in ${defaultSkills}. Keep it concise (3 paragraphs), confident, and specific. Return ONLY the cover letter text. Sign off the letter with ${senderName}.`;
+    const prompt = `Write a professional, personalized cover letter for a ${title||(profile.targetRoles[0]||'Software Engineer')} position. The job description is:\n\n${jd}\n\nThe candidate is ${senderName}, a ${senderExp} seeking ${senderRoles} roles, with experience in ${defaultSkills}. Keep it concise (3 paragraphs), confident, and specific. Return ONLY the cover letter text. Sign off the letter with ${senderName}.`;
     const result = await callGemini(prompt);
     coverLetter = result;
     out.innerHTML = `
@@ -1532,7 +1640,7 @@ function showOutreachForm() {
     <div class="grid-3" style="gap:10px; margin-bottom:12px">
       <div class="form-group" style="margin:0"><label class="form-label">Name</label><input id="om-name" class="form-input" placeholder="Priya Sharma"></div>
       <div class="form-group" style="margin:0"><label class="form-label">Company</label><input id="om-co" class="form-input" placeholder="Google"></div>
-      <div class="form-group" style="margin:0"><label class="form-label">Role</label><input id="om-role" class="form-input" placeholder="SDE Intern"></div>
+      <div class="form-group" style="margin:0"><label class="form-label">Role</label><input id="om-role" class="form-input" placeholder="SDE Intern" value="${getUserProfile().targetRoles[0] || ''}"></div>
     </div>
     <div class="flex-gap">
       <button class="btn btn-primary btn-sm" onclick="generateOutreach()">✨ Generate with Gemini</button>
@@ -1918,7 +2026,7 @@ function showDebriefForm() {
     <div style="font-weight:800; font-size:14px; margin-bottom:12px">📝 Log New Interview</div>
     <div class="grid-2" style="gap:10px; margin-bottom:12px">
       <div class="form-group" style="margin:0"><label class="form-label">Company</label><input id="db-co" class="form-input" placeholder="e.g. Google"></div>
-      <div class="form-group" style="margin:0"><label class="form-label">Role</label><input id="db-role" class="form-input" placeholder="e.g. SDE Intern"></div>
+      <div class="form-group" style="margin:0"><label class="form-label">Role</label><input id="db-role" class="form-input" placeholder="e.g. SDE Intern" value="${getUserProfile().targetRoles[0] || ''}"></div>
       <div class="form-group" style="margin:0"><label class="form-label">Round</label><input id="db-round" class="form-input" placeholder="e.g. Round 1 — Technical"></div>
       <div class="form-group" style="margin:0"><label class="form-label">Interviewer</label><input id="db-interviewer" class="form-input" placeholder="Name (optional)"></div>
     </div>
@@ -2088,7 +2196,8 @@ if (deadlines.length === 0) {
 
 function renderRoast() {
   document.getElementById('roast-input').value = '';
-  document.getElementById('roast-role').value = '';
+  const profile = getUserProfile();
+  document.getElementById('roast-role').value = profile.targetRoles[0] || '';
   document.getElementById('roast-output').innerHTML = '<div class="empty"><div class="empty-icon">💀</div><h3>Ready to roast</h3><p>Paste your resume and brace yourself for honest feedback</p></div>';
 }
 
@@ -2100,8 +2209,10 @@ async function doRoast() {
   btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Roasting...';
   const out = document.getElementById('roast-output');
   out.innerHTML = '<div style="text-align:center; padding:40px; color:var(--text-2)"><div class="spinner spinner-purple" style="width:32px;height:32px;border-width:3px;margin:0 auto 12px"></div><div>AI is preparing a brutal roast...</div></div>';
+  const profile = getUserProfile();
+  const targetRole = role || profile.targetRoles[0] || 'Software Engineer';
   try {
-    const prompt = `You are a brutal, sarcastic, but highly experienced technical recruiter. Roast this resume for the role "${role || 'Software Engineer'}". Be funny, harsh, and brutally honest about formatting, bullet points, tech stack, and experience.
+    const prompt = `You are a brutal, sarcastic, but highly experienced technical recruiter. Roast this resume for the role "${targetRole}". Be funny, harsh, and brutally honest about formatting, bullet points, tech stack, and experience.
     Resume text:
     ${resume}
     
@@ -2120,7 +2231,7 @@ async function doRoast() {
     } catch(e) {
       data = {
         score: 42,
-        roast: "This resume looks like it was written in 2005. The bullet points are just a list of chores rather than actual accomplishments. You worked with Node.js and MongoDB but we have no idea if you actually built anything useful or just copied a tutorial.",
+        roast: `This resume looks like it was written in 2005. The bullet points are just a list of chores rather than actual accomplishments. You worked with ${(profile.skills && profile.skills.slice(0, 2).join(' and ')) || 'standard tools'} but we have no idea if you actually built anything useful or just copied a tutorial.`,
         redflags: ["No quantified impact (no percentages, no dollar amounts, no time saved).", "Generic descriptions of daily duties instead of results.", "Weak action verbs."],
         fixes: ["Rewrite bullet points using the XYZ formula: Accomplished [X] as measured by [Y], by doing [Z].", "Add metrics to every single bullet point.", "Remove generic skills and list projects with active GitHub links."]
       };
@@ -2189,8 +2300,8 @@ async function doJDDecode() {
         fitRating: "Risky",
         redflags: ["Fast-paced environment (often means disorganization/overtime).", "Must handle multiple roles."],
         greenflags: ["Mentorship is mentioned.", "Clear compensation range listed."],
-        keywords: ["React", "TypeScript", "Node.js", "Docker"],
-        hiddenTruth: "They want a senior-level developer for a junior-level salary to build their entire product alone."
+        keywords: (profile.skills && profile.skills.length > 0) ? profile.skills.slice(0, 4) : ["React", "TypeScript", "Node.js", "Docker"],
+        hiddenTruth: `They want a senior-level ${targetRoles.split(',')[0]} for a junior-level salary to build their entire product alone.`
       };
     }
     const badgeColor = {
@@ -2235,10 +2346,11 @@ async function doJDDecode() {
 }
 
 function renderNegotiate() {
+  const profile = getUserProfile();
   document.getElementById('neg-co').value = '';
-  document.getElementById('neg-role').value = '';
+  document.getElementById('neg-role').value = profile.targetRoles[0] || '';
   document.getElementById('neg-offered').value = '';
-  document.getElementById('neg-target').value = '';
+  document.getElementById('neg-target').value = profile.expectedSalary || '';
   document.getElementById('neg-competing').value = '';
   document.getElementById('neg-output').innerHTML = '<div class="empty"><div class="empty-icon">🎭</div><h3>Fill in your offer details</h3><p>Get exact word-for-word scripts to negotiate confidently</p></div>';
 }
@@ -2257,13 +2369,15 @@ async function doNegotiate() {
   out.innerHTML = '<div style="text-align:center; padding:40px; color:var(--text-2)"><div class="spinner spinner-purple" style="width:32px;height:32px;border-width:3px;margin:0 auto 12px"></div><div>AI negotiation coach is drafting strategy...</div></div>';
   const profile = getUserProfile();
   const senderName = profile.name || "Candidate";
+  const targetRole = role || profile.targetRoles[0] || 'Software Engineer';
+  const targetComp = target || profile.expectedSalary || '15-20% higher than offered';
   
   try {
     const prompt = `You are an expert salary negotiation coach. The candidate's name is ${senderName}. Help me negotiate this offer:
     Company: ${co}
-    Role: ${role || 'Software Engineer'}
+    Role: ${targetRole}
     Offered compensation: ${offered}
-    My Target compensation: ${target || '15-20% higher than offered'}
+    My Target compensation: ${targetComp}
     Other competing offers: ${competing || 'None'}
     
     Return a valid JSON object ONLY, with no markdown code blocks or wrapper backticks:
@@ -2280,7 +2394,7 @@ async function doNegotiate() {
     } catch(e) {
       data = {
         strategy: "Focus on expressing high excitement for the role while using your market research (or other offers) as leverage. Always keep it polite but firm.",
-        email: `Subject: Offer Discussion — ${role} — ${senderName}\n\nDear Recruiter,\n\nThank you so much for extending the offer for the ${role} position. I am incredibly excited about the opportunity to join ${co} and work with the team.\n\nBefore signing, I wanted to discuss the compensation package. Given my background and another pending offer, I was hoping we could look at a base salary of ${target}. If we can align on this, I am ready to sign the offer immediately.\n\nThank you so much,\n${senderName}`,
+        email: `Subject: Offer Discussion — ${targetRole} — ${senderName}\n\nDear Recruiter,\n\nThank you so much for extending the offer for the ${targetRole} position. I am incredibly excited about the opportunity to join ${co} and work with the team.\n\nBefore signing, I wanted to discuss the compensation package. Given my background and another pending offer, I was hoping we could look at a base salary of ${targetComp}. If we can align on this, I am ready to sign the offer immediately.\n\nThank you so much,\n${senderName}`,
         phone: "- Start by reiterating your excitement for the team and project.\n- State that you want to finalize details today and ask if there is flexibility on the base compensation.\n- Mention your target number and pause. Let them respond.\n- If they say no, ask about signing bonuses or performance review cycles."
       };
     }
@@ -2482,7 +2596,9 @@ async function genGhostFollowup(appId) {
   targetDiv.innerHTML = '<div style="text-align:center; padding:15px; color:var(--text-2)"><div class="spinner spinner-purple" style="width:20px;height:20px;border-width:2px;margin:0 auto 6px"></div><div>AI is drafting a nudge...</div></div>';
   
   try {
-    const prompt = `Draft a polite, professional, short follow-up email/message checking on the status of my application for the ${app.role} role at ${app.company}. State nicely that I am still very interested. Keep it under 80 words. Return ONLY the message text.`;
+    const profile = getUserProfile();
+    const senderName = profile.name || "Candidate";
+    const prompt = `Draft a polite, professional, short follow-up email/message checking on the status of my application for the ${app.role} role at ${app.company}. State nicely that I am still very interested. The sender is ${senderName}. Keep it under 80 words. Return ONLY the message text. Sign off with ${senderName}.`;
     const res = await callGemini(prompt);
     targetDiv.innerHTML = `
       <div style="font-size:11px; font-weight:700; color:var(--text-3); text-transform:uppercase; margin-bottom:6px">Follow-up Template</div>
@@ -2544,13 +2660,16 @@ async function doABTest() {
       const cleaned = res.replace(/```json/i, '').replace(/```/g, '').trim();
       data = JSON.parse(cleaned);
     } catch(e) {
+      const profile = getUserProfile();
+      const firstRole = profile.targetRoles[0] || 'Software Engineer';
+      const fallbackSkills = profile.skills.length > 0 ? profile.skills : ["Design", "Strategy", "Tools"];
       data = {
         winner: "A",
         scoreA: 85,
         scoreB: 75,
-        reasoning: "Resume A is better aligned because it highlights relevant React and frontend architecture projects that map directly to the job description.",
-        prosA: ["Strong frontend focus matching the JD", "Lists TypeScript projects explicitly"],
-        prosB: ["Good general software engineering skills", "Lacks specific frontend metrics mentioned in JD"]
+        reasoning: `Resume A is better aligned because it highlights relevant ${firstRole} projects and ${fallbackSkills[0] || 'core'} experience that map directly to the job description.`,
+        prosA: [`Strong ${firstRole} focus matching the JD`, `Lists ${fallbackSkills[0] || 'core'} projects explicitly`],
+        prosB: [`Good general skills`, `Lacks specific ${fallbackSkills[0] || 'core'} metrics mentioned in JD`]
       };
     }
     out.innerHTML = `
@@ -2589,13 +2708,36 @@ async function doABTest() {
 // ════════════════════════════════════════
 // RECRUITER COLD PITCH & ALGO WARM-UP LOGIC
 // ════════════════════════════════════════
-const WARMUP_QUESTIONS = [
+let WARMUP_QUESTIONS = [
   {q: "What is the time complexity of searching in a balanced binary search tree (BST)?", a: "O(log N). Because the tree is balanced, each comparison discards half of the remaining nodes.", cat: "Algorithms"},
   {q: "What is the difference between '==' and '===' in JavaScript?", a: "'==' checks for value equality with type coercion, whereas '===' checks for strict equality of both value and type without coercion.", cat: "JavaScript"},
   {q: "What is a deadlock in Operating Systems?", a: "A situation where two or more processes are unable to proceed because each is waiting for the other to release a resource.", cat: "OS"},
   {q: "Explain what CORS stands for and why it exists.", a: "Cross-Origin Resource Sharing. It is a security protocol enforced by browsers to restrict scripts on one site from accessing resources on another origin.", cat: "Web Dev"},
   {q: "How does a HTTP GET request differ from a POST request?", a: "GET retrieves data from a resource via URL queries. POST sends payload data in the request body to create or update resource state.", cat: "Networks"}
 ];
+
+function updateWarmupQuestions(profile) {
+  const firstRole = profile.targetRoles.length > 0 ? profile.targetRoles[0] : "Software Engineer";
+  const skills = profile.skills.length > 0 ? profile.skills : ["Problem Solving", "Design", "Communication"];
+  
+  WARMUP_QUESTIONS = [
+    {
+      q: `Explain a core design pattern or technique you use when working with ${skills[0] || 'your core technologies'}.`,
+      a: `In ${firstRole} development, leveraging structured patterns for ${skills[0]} ensures high performance, clean organization, and robust scalability.`,
+      cat: firstRole
+    },
+    {
+      q: `What is a common bottleneck or performance pitfall in ${skills[1] || 'modern system architecture'} and how do you resolve it?`,
+      a: `Typically, issues arise from unoptimized processes or improper configuration of ${skills[1]}. Resolving this involves auditing trace files, profiling bottlenecks, and applying targeted optimizations.`,
+      cat: "Optimization"
+    },
+    {
+      q: `How do you handle collaboration and handoff of assets/features when utilizing ${skills[2] || 'development tools'}?`,
+      a: `Using ${skills[2]} in a collaborative environment requires establishing clear naming conventions, version control, and modular components to prevent conflicts.`,
+      cat: "Methodology"
+    }
+  ];
+}
 
 let currentWarmupIndex = 0;
 function renderWarmup() {
@@ -2724,10 +2866,12 @@ class ScreenPet {
     this.vy = (Math.random() - 0.5) * 4;
     this.emoji = emoji;
     
+    const profile = getUserProfile();
+    const firstRole = profile.targetRoles.length > 0 ? profile.targetRoles[0].split(' ')[0] : 'SDE';
     this.phrases = emoji === '🐱' ? 
-      ['Meow!', 'Code review?', 'Need coffee.', 'ATS pass!', 'Hire me?', 'Feed me bugs!'] :
+      ['Meow!', 'Code review?', 'Need coffee.', `${firstRole} pass!`, 'Hire me?', 'Feed me bugs!'] :
       emoji === '🐶' ? 
-      ['Woof!', 'Referral please!', 'Good boy!', 'Let\'s interview!', 'No ghosting!', 'Let\'s build!'] :
+      ['Woof!', 'Referral please!', 'Good boy!', `Let's interview!`, 'No ghosting!', `Ready for ${firstRole}!`] :
       ['Boing!', 'Crunching data...', 'Rabbit MQ!', 'High salary!', 'Ready!', 'Hop hop!'];
       
     this.el.addEventListener('click', () => this.speak());
@@ -3025,9 +3169,7 @@ window.addEventListener('click', () => {
 function customizeMockData() {
   try {
     const profile = getUserProfile();
-    if (!profile.name) return; // Only customize if user has filled settings
-    
-    const senderName = profile.name;
+    const senderName = profile.name || "Job Seeker";
     const firstRole = profile.targetRoles.length > 0 ? profile.targetRoles[0] : "Software Engineer";
     const loc = profile.preferredLocations.length > 0 ? profile.preferredLocations[0] : "Bangalore";
     
@@ -3176,12 +3318,21 @@ function customizeMockData() {
 // INIT
 // ════════════════════════════════════════
 // Register subscriber for dynamic UI updates
-subscribeToProfileChanges((profile) => {
+function refreshAllViews() {
   customizeMockData();
   updateProfileDropdownHeader();
+  const profile = getUserProfile();
+  updateWarmupQuestions(profile);
+  const prepRoleInput = document.getElementById('prep-role');
+  if (prepRoleInput) prepRoleInput.value = profile.targetRoles[0] || '';
   renderDashboard();
   renderNotifications();
+  renderTracker();
   if (currentPage === 'jobs') renderJobs();
+}
+
+subscribeToProfileChanges((profile) => {
+  refreshAllViews();
   loadSettingsForm(profile);
 });
 
@@ -3207,6 +3358,9 @@ function loadSettingsForm(profile) {
 document.addEventListener('DOMContentLoaded', () => {
   const profile = getUserProfile();
   customizeMockData();
+  updateWarmupQuestions(profile);
+  const prepRoleInput = document.getElementById('prep-role');
+  if (prepRoleInput) prepRoleInput.value = profile.targetRoles[0] || '';
   renderDashboard();
   updateProfileDropdownHeader();
   renderNotifications();
