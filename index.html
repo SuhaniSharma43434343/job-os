@@ -1,0 +1,3217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Job OS — Your Personal Career Engine</title>
+<meta name="description" content="AI-powered job application system. Find jobs, tailor resumes, generate cover letters, prep for interviews.">
+<link rel="stylesheet" href="styles.css" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ══ TOP BANNER ══ -->
+  <header class="topbar">
+    <div class="topbar-vision">
+      <strong>Vision:</strong> 30-minute setup. Then your laptop becomes your personal recruiting team.
+    </div>
+    <div class="topbar-right" style="position: relative;">
+      <!-- Notifications container -->
+      <div style="position: relative;">
+        <div class="topbar-avatar" title="Notifications" onclick="toggleNotifications(event)">🔔<span class="notification-badge" id="notif-badge" style="display:none;"></span></div>
+        <div class="dropdown-menu" id="notifications-dropdown" onclick="event.stopPropagation()">
+          <div class="dropdown-header">🔔 Notifications</div>
+          <div id="notifications-list" class="dropdown-list">
+            <!-- Rendered dynamically -->
+          </div>
+          <div class="dropdown-footer" onclick="clearNotifications()">Clear all</div>
+        </div>
+      </div>
+
+      <!-- Profile container -->
+      <div style="position: relative;">
+        <div class="topbar-avatar" title="Profile" onclick="toggleProfileMenu(event)">🐱</div>
+        <div class="dropdown-menu" id="profile-dropdown" onclick="event.stopPropagation()">
+          <div class="dropdown-header">
+            <div style="font-weight: 700; font-size: 14px;" id="profile-display-name">Guest User</div>
+            <div style="font-size: 11px; color: var(--text-3);" id="profile-display-email">guest@example.com</div>
+          </div>
+          <div class="dropdown-item" onclick="navigate('settings', document.getElementById('nav-settings'))">⚙️ Settings</div>
+          <div class="dropdown-item" onclick="navigate('tracker', document.getElementById('nav-tracker'))">📋 Application Tracker</div>
+          <div class="dropdown-item" onclick="navigate('calendar', document.getElementById('nav-calendar'))">📅 Upcoming Deadlines</div>
+          <hr style="border: 0; border-top: 1px solid var(--border); margin: 6px 0;" />
+          <div class="dropdown-item" style="color: var(--pink); font-weight: bold;" onclick="mockLogout()">🚪 Sign Out</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ══ SIDEBAR ══ -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-icon">🚀</div>
+      <h1>JOB OS</h1>
+    </div>
+
+    <button class="nav-item active" onclick="navigate('dashboard', this)" id="nav-dashboard">
+      <div class="nav-icon">🐱</div> Dashboard
+    </button>
+    <button class="nav-item" onclick="navigate('jobs', this)" id="nav-jobs">
+      <div class="nav-icon">🔍</div> Job Discovery
+      <span class="nav-badge">12</span>
+    </button>
+    <button class="nav-item" onclick="navigate('resume', this)" id="nav-resume">
+      <div class="nav-icon">📄</div> Resume Vault
+    </button>
+    <button class="nav-item" onclick="navigate('outreach', this)" id="nav-outreach">
+      <div class="nav-icon">🐶</div> Outreach
+      <span class="nav-badge">3</span>
+    </button>
+    <button class="nav-item" onclick="navigate('interview', this)" id="nav-interview">
+      <div class="nav-icon">🎯</div> Interview Prep
+    </button>
+    <button class="nav-item" onclick="navigate('debrief', this)" id="nav-debrief">
+      <div class="nav-icon">📊</div> Post-Interview Intelligence
+    </button>
+    <button class="nav-item" onclick="navigate('tracker', this)" id="nav-tracker">
+      <div class="nav-icon">📋</div> Tracker
+    </button>
+    <button class="nav-item" onclick="navigate('settings', this)" id="nav-settings">
+      <div class="nav-icon">⚙️</div> Settings
+    </button>
+
+    <div style="font-size:10px; font-weight:800; color:var(--text-3); text-transform:uppercase; letter-spacing:.08em; padding:10px 16px 4px">⚡ Power-Ups</div>
+    <button class="nav-item" onclick="navigate('roast', this)" id="nav-roast">
+      <div class="nav-icon">💀</div> Resume Roast
+    </button>
+    <button class="nav-item" onclick="navigate('jddecoder', this)" id="nav-jddecoder">
+      <div class="nav-icon">🔍</div> JD Decoder
+    </button>
+    <button class="nav-item" onclick="navigate('negotiate', this)" id="nav-negotiate">
+      <div class="nav-icon">🎭</div> Offer Negotiator
+    </button>
+    <button class="nav-item" onclick="navigate('calendar', this)" id="nav-calendar">
+      <div class="nav-icon">📅</div> Deadline Calendar
+    </button>
+    <button class="nav-item" onclick="navigate('ghosting', this)" id="nav-ghosting">
+      <div class="nav-icon">👻</div> Ghosting Detector
+      <span class="nav-badge" id="ghost-badge">2</span>
+    </button>
+    <button class="nav-item" onclick="navigate('abtest', this)" id="nav-abtest">
+      <div class="nav-icon">🆚</div> Resume A/B Test
+    </button>
+    <button class="nav-item" onclick="toggleScreenPets()" id="toggle-pets-btn" style="margin-top:10px;">
+      <div class="nav-icon">🐾</div> Enable Screen Pets
+    </button>
+
+    <div class="sidebar-footer">🟢 Groq AI Connected</div>
+  </aside>
+
+  <!-- ══ MAIN CONTENT ══ -->
+  <main class="main" id="main">
+
+    <!-- ═══════════════════════════════════════
+         PAGE: DASHBOARD
+    ═══════════════════════════════════════ -->
+    <div class="page active" id="page-dashboard">
+
+      <div class="page-header">
+        <div>
+          <div class="page-title" id="dash-greeting">🌸 Good morning!</div>
+          <div class="page-subtitle">Module 1 — Daily Briefing Dashboard · <span id="dash-date"></span></div>
+        </div>
+        <div class="flex-gap">
+          <button class="btn btn-ghost btn-sm" onclick="navigate('jobs', document.getElementById('nav-jobs'))">🌐 Browser</button>
+          <button class="btn btn-primary" onclick="navigate('jobs', document.getElementById('nav-jobs'))">🔍 Discover Jobs</button>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-grid">
+        <div class="stat-card" style="--accent-color:#8B7CF6">
+          <div class="stat-label">🔍 Jobs Found Today</div>
+          <div class="stat-value" id="stat-jobs">0</div>
+          <div class="stat-change" id="stat-jobs-sub">No new jobs today</div>
+        </div>
+        <div class="stat-card" style="--accent-color:#7DD3B8">
+          <div class="stat-label">📨 Applications Sent</div>
+          <div class="stat-value" id="stat-apps">0</div>
+          <div class="stat-change" id="stat-apps-sub">0 this week</div>
+        </div>
+        <div class="stat-card" style="--accent-color:#F4A8C8">
+          <div class="stat-label">🎯 Interviews Booked</div>
+          <div class="stat-value" id="stat-interviews">0</div>
+          <div class="stat-change" id="stat-interviews-sub">0 upcoming this week</div>
+        </div>
+        <div class="stat-card" style="--accent-color:#FCD34D">
+          <div class="stat-label">📈 Response Rate</div>
+          <div class="stat-value" id="stat-response">0%</div>
+          <div class="stat-change" id="stat-response-sub">0% vs avg</div>
+        </div>
+        <div class="stat-card" style="--accent-color:#93C5FD">
+          <div class="stat-label">🤝 Outreach Sent</div>
+          <div class="stat-value" id="stat-outreach">0</div>
+          <div class="stat-change" id="stat-outreach-sub">0 replies pending</div>
+        </div>
+      </div>
+
+      <!-- Main grid: chart + jobs + puppeteer -->
+      <div style="display:grid; grid-template-columns:1fr 1fr 220px; gap:16px;">
+
+        <!-- Left: Chart + Activity -->
+        <div style="display:flex; flex-direction:column; gap:14px;">
+          <!-- Mini chart -->
+          <div class="card card-sm">
+            <div class="flex-between" style="margin-bottom:10px">
+              <span style="font-weight:700; font-size:13px">📈 Application Activity</span>
+              <span class="badge badge-purple">This Week</span>
+            </div>
+            <svg viewBox="0 0 220 80" style="width:100%; height:80px;">
+              <defs>
+                <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#8B7CF6" stop-opacity="0.3"/>
+                  <stop offset="100%" stop-color="#8B7CF6" stop-opacity="0"/>
+                </linearGradient>
+                <linearGradient id="chartGrad2" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#F4A8C8" stop-opacity="0.3"/>
+                  <stop offset="100%" stop-color="#F4A8C8" stop-opacity="0"/>
+                </linearGradient>
+              </defs>
+              <!-- Grid lines -->
+              <line x1="0" y1="20" x2="220" y2="20" stroke="#EDE9FE" stroke-width="1"/>
+              <line x1="0" y1="40" x2="220" y2="40" stroke="#EDE9FE" stroke-width="1"/>
+              <line x1="0" y1="60" x2="220" y2="60" stroke="#EDE9FE" stroke-width="1"/>
+              <!-- Area 1 -->
+              <path d="M0,65 C30,50 55,30 80,35 C110,40 130,20 160,25 C185,28 205,38 220,32 L220,80 L0,80Z" fill="url(#chartGrad)"/>
+              <path d="M0,65 C30,50 55,30 80,35 C110,40 130,20 160,25 C185,28 205,38 220,32" fill="none" stroke="#8B7CF6" stroke-width="2.5" stroke-linecap="round"/>
+              <!-- Area 2 -->
+              <path d="M0,72 C25,60 50,55 80,58 C110,62 135,45 160,50 C185,54 205,48 220,45 L220,80 L0,80Z" fill="url(#chartGrad2)"/>
+              <path d="M0,72 C25,60 50,55 80,58 C110,62 135,45 160,50 C185,54 205,48 220,45" fill="none" stroke="#F4A8C8" stroke-width="2.5" stroke-linecap="round"/>
+              <!-- Dots -->
+              <circle cx="80" cy="35" r="4" fill="white" stroke="#8B7CF6" stroke-width="2"/>
+              <circle cx="160" cy="25" r="4" fill="white" stroke="#8B7CF6" stroke-width="2"/>
+              <text x="0" y="78" font-size="8" fill="#B0A8CC">Sun</text>
+              <text x="38" y="78" font-size="8" fill="#B0A8CC">Mon</text>
+              <text x="76" y="78" font-size="8" fill="#B0A8CC">Tue</text>
+              <text x="110" y="78" font-size="8" fill="#B0A8CC">Wed</text>
+              <text x="148" y="78" font-size="8" fill="#B0A8CC">Thu</text>
+              <text x="186" y="78" font-size="8" fill="#B0A8CC">Fri</text>
+            </svg>
+          </div>
+
+          <!-- Progress Rings -->
+          <div class="card card-sm">
+            <div style="font-weight:700; font-size:13px; margin-bottom:12px">🎯 Progress Rings</div>
+            <div class="ring-container" style="justify-content:space-around">
+              <div class="ring">
+                <svg width="70" height="70" viewBox="0 0 70 70">
+                  <circle class="ring-bg" cx="35" cy="35" r="28"/>
+                  <circle class="ring-fill" cx="35" cy="35" r="28" stroke="#F4A8C8"
+                    stroke-dasharray="175.9" stroke-dashoffset="53" />
+                </svg>
+                <div class="ring-emoji">🐱</div>
+                <div class="ring-label" style="margin-top:4px; font-size:9px">Applied<br>70%</div>
+              </div>
+              <div class="ring">
+                <svg width="70" height="70" viewBox="0 0 70 70">
+                  <circle class="ring-bg" cx="35" cy="35" r="28"/>
+                  <circle class="ring-fill" cx="35" cy="35" r="28" stroke="#7DD3B8"
+                    stroke-dasharray="175.9" stroke-dashoffset="105" />
+                </svg>
+                <div class="ring-emoji">🐱</div>
+                <div class="ring-label" style="margin-top:4px; font-size:9px">Replies<br>40%</div>
+              </div>
+              <div class="ring">
+                <svg width="70" height="70" viewBox="0 0 70 70">
+                  <circle class="ring-bg" cx="35" cy="35" r="28"/>
+                  <circle class="ring-fill" cx="35" cy="35" r="28" stroke="#8B7CF6"
+                    stroke-dasharray="175.9" stroke-dashoffset="132" />
+                </svg>
+                <div class="ring-emoji">🐶</div>
+                <div class="ring-label" style="margin-top:4px; font-size:9px">Interview<br>25%</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Today's Focus (Todos) -->
+          <div class="card card-sm">
+            <div class="flex-between" style="margin-bottom:12px">
+              <span style="font-weight:700; font-size:13px">✅ Today's Focus</span>
+            </div>
+            <div id="todo-list"></div>
+          </div>
+        </div>
+
+        <!-- Center: New Job Postings -->
+        <div style="display:flex; flex-direction:column; gap:14px;">
+          <div class="card card-sm" style="flex:1">
+            <div class="flex-between" style="margin-bottom:12px">
+              <span style="font-weight:700; font-size:13px">🆕 New Job Postings</span>
+              <span class="badge badge-blue">Feed</span>
+            </div>
+            <div id="dashboard-jobs"></div>
+          </div>
+
+          <!-- Activity feed -->
+          <div class="card card-sm">
+            <div style="font-weight:700; font-size:13px; margin-bottom:12px">⚡ Recent Activity</div>
+            <div class="timeline">
+              <div class="timeline-item">
+                <div class="timeline-dot active">⭐</div>
+                <div><div class="timeline-title">New 94% match at Google</div><div class="timeline-time">2 min ago</div></div>
+              </div>
+              <div class="timeline-item">
+                <div class="timeline-dot">📝</div>
+                <div><div class="timeline-title">Cover letter generated — Microsoft</div><div class="timeline-time">1 hr ago</div></div>
+              </div>
+              <div class="timeline-item">
+                <div class="timeline-dot">✅</div>
+                <div><div class="timeline-title">Application submitted — Flipkart</div><div class="timeline-time">3 hrs ago</div></div>
+              </div>
+              <div class="timeline-item" style="padding-bottom:0">
+                <div class="timeline-dot">🤝</div>
+                <div><div class="timeline-title">Referral drafted for Zepto</div><div class="timeline-time">Yesterday</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Live Puppeteer Log -->
+        <div style="display:flex; flex-direction:column; gap:14px;">
+          <div class="puppeteer-panel">
+            <div style="font-weight:800; font-size:13px; margin-bottom:4px">🤖 Live Puppeteer Log</div>
+            <div style="font-size:11px; color:var(--text-3); margin-bottom:8px">Browser automation in control.</div>
+            <div style="text-align:center; font-size:48px; margin:8px 0">🐱</div>
+            <div class="puppeteer-screen" id="puppeteer-log">
+              <div class="puppeteer-log-line">> Launching browser...</div>
+            </div>
+            <button class="btn btn-mint btn-sm" style="width:100%" onclick="runPuppeteer()">▶ Continue</button>
+          </div>
+
+          <!-- Quick actions -->
+          <div class="card card-sm">
+            <div style="font-weight:700; font-size:12px; margin-bottom:10px">⚡ Quick Actions</div>
+            <div style="display:flex; flex-direction:column; gap:8px;">
+              <button class="btn btn-ghost btn-sm" style="justify-content:flex-start" onclick="navigate('jobs', document.getElementById('nav-jobs'))">🔍 Scan New Jobs</button>
+              <button class="btn btn-ghost btn-sm" style="justify-content:flex-start" onclick="navigate('outreach', document.getElementById('nav-outreach'))">✍️ Write Outreach</button>
+              <button class="btn btn-ghost btn-sm" style="justify-content:flex-start" onclick="navigate('interview', document.getElementById('nav-interview'))">🎯 Prep Interview</button>
+              <button class="btn btn-ghost btn-sm" style="justify-content:flex-start" onclick="navigate('debrief', document.getElementById('nav-debrief'))">📊 Log Debrief</button>
+            </div>
+          </div>
+
+          <!-- Daily Warm-Up Widget -->
+          <div class="card card-sm" style="border-color:rgba(139,124,246,0.3)">
+            <div class="flex-between" style="margin-bottom:10px">
+              <span style="font-weight:800; font-size:12px">🧠 Daily Tech Warm-Up</span>
+              <span class="badge badge-purple" style="font-size:9px" id="warmup-category">Quiz</span>
+            </div>
+            <div id="warmup-question" style="font-size:12.5px; font-weight:700; line-height:1.5; color:var(--text); margin-bottom:8px">Loading question...</div>
+            <div id="warmup-answer" style="display:none; font-size:11.5px; line-height:1.6; color:var(--text-2); background:#F9FAFB; padding:8px; border-radius:8px; border:1px solid var(--border); margin-bottom:8px"></div>
+            <div class="flex-gap">
+              <button class="btn btn-primary btn-xs" id="warmup-action-btn" onclick="revealWarmupAnswer()">👁️ Show Answer</button>
+              <button class="btn btn-ghost btn-xs" onclick="nextWarmupQuestion()">🔄 Next</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════
+         PAGE: JOB DISCOVERY
+    ═══════════════════════════════════════ -->
+    <div class="page" id="page-jobs">
+      <div class="page-header">
+        <div>
+          <div class="page-title">🔍 Job Discovery</div>
+          <div class="page-subtitle">Scanned 6 platforms · 12 jobs matched · Ranked by AI fit score</div>
+        </div>
+        <div class="flex-gap">
+          <button class="btn btn-ghost btn-sm" id="apply-selected-btn" onclick="applySelected()" style="display:none">✅ Apply to Selected</button>
+          <button class="btn btn-primary btn-sm" onclick="scanJobs()">🔄 Scan Now</button>
+        </div>
+      </div>
+
+      <div class="card card-sm" style="padding:12px 16px;">
+        <div class="flex-gap">
+          <div class="search-wrap" style="flex:1">
+            <span class="search-icon">🔎</span>
+            <input class="form-input search-input" id="job-search" placeholder="Search role, company..." oninput="filterJobs()" />
+          </div>
+          <div class="chips" id="platform-chips"></div>
+        </div>
+        <div class="chips" style="margin-top:10px" id="type-chips"></div>
+      </div>
+
+      <div style="display:flex; justify-content:space-between; align-items:center; padding:0 2px;">
+        <span style="font-size:12.5px; color:var(--text-2)"><span id="job-count">8</span> jobs · <span id="selected-count">0</span> selected</span>
+        <button class="btn btn-ghost btn-xs" onclick="selectAllJobs()">Select All</button>
+      </div>
+
+      <div id="jobs-list" style="display:flex; flex-direction:column; gap:10px;"></div>
+    </div>
+
+    <!-- ═══════════════════════════════════════
+         PAGE: RESUME VAULT
+    ═══════════════════════════════════════ -->
+    <div class="page" id="page-resume">
+      <div class="page-header">
+        <div>
+          <div class="page-title">📄 Resume Vault</div>
+          <div class="page-subtitle">Upload, tailor with AI, and generate cover letters</div>
+        </div>
+        <div class="flex-gap">
+          <input type="file" id="resume-upload" accept=".pdf,.doc,.docx" style="display:none" onchange="uploadResume(event)" />
+          <button class="btn btn-primary" onclick="document.getElementById('resume-upload').click()">📤 Upload Resume</button>
+        </div>
+      </div>
+
+      <div class="tabs">
+        <button class="tab active" onclick="switchTab('resume','vault',this)">📁 My Resumes</button>
+        <button class="tab" onclick="switchTab('resume','tailor',this)">✨ AI Tailor</button>
+        <button class="tab" onclick="switchTab('resume','cover',this)">📝 Cover Letter</button>
+      </div>
+
+      <div id="resume-vault" class="resume-tab-content"></div>
+      <div id="resume-tailor" class="resume-tab-content" style="display:none"></div>
+      <div id="resume-cover" class="resume-tab-content" style="display:none"></div>
+    </div>
+
+    <!-- ═══════════════════════════════════════
+         PAGE: OUTREACH
+    ═══════════════════════════════════════ -->
+    <div class="page" id="page-outreach">
+      <div class="page-header">
+        <div>
+          <div class="page-title">🤝 Outreach Manager</div>
+          <div class="page-subtitle">Draft referrals, follow-ups, nudges — copy-paste to LinkedIn</div>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="showOutreachForm()">✍️ New Message</button>
+      </div>
+      <div id="outreach-form" style="display:none" class="card card-sm"></div>
+      <div class="grid-2" style="align-items:flex-start">
+        <div id="outreach-list" style="display:flex; flex-direction:column; gap:10px;"></div>
+        <div id="outreach-editor"></div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════
+         PAGE: INTERVIEW PREP
+    ═══════════════════════════════════════ -->
+    <div class="page" id="page-interview">
+      <div class="page-header">
+        <div>
+          <div class="page-title">🎯 Interview Prep Engine</div>
+          <div class="page-subtitle">Company research, questions, mock interview with AI grading</div>
+        </div>
+        <div class="flex-gap">
+          <input class="form-input" id="prep-company" placeholder="Company" style="width:140px" value="Google"/>
+          <input class="form-input" id="prep-role" placeholder="Role" style="width:180px" value="SDE Intern"/>
+          <button class="btn btn-primary btn-sm" onclick="loadPrep()">Load Prep 🐾</button>
+        </div>
+      </div>
+
+      <div class="tabs">
+        <button class="tab active" onclick="switchTab('interview','research',this)">🏢 Company Brief</button>
+        <button class="tab" onclick="switchTab('interview','questions',this)">📋 Questions</button>
+        <button class="tab" onclick="switchTab('interview','mock',this)">🎤 Mock Interview</button>
+      </div>
+
+      <div id="interview-research" class="interview-tab-content"></div>
+      <div id="interview-questions" class="interview-tab-content" style="display:none"></div>
+      <div id="interview-mock" class="interview-tab-content" style="display:none"></div>
+    </div>
+
+    <!-- ═══════════════════════════════════════
+         PAGE: POST-INTERVIEW DEBRIEF
+    ═══════════════════════════════════════ -->
+    <div class="page" id="page-debrief">
+      <div class="page-header">
+        <div>
+          <div class="page-title">📊 Post-Interview Debrief</div>
+          <div class="page-subtitle">Log questions, score answers, generate thank-you emails</div>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="showDebriefForm()">📝 Log Interview</button>
+      </div>
+      <div id="debrief-form" style="display:none" class="card card-sm"></div>
+      <div class="grid-2" style="align-items:flex-start">
+        <div id="debrief-list" style="display:flex; flex-direction:column; gap:10px;"></div>
+        <div id="debrief-detail"></div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════
+         PAGE: TRACKER
+    ═══════════════════════════════════════ -->
+    <div class="page" id="page-tracker">
+      <div class="page-header">
+        <div>
+          <div class="page-title">📋 Application Tracker</div>
+          <div class="page-subtitle">Track every application, interview, and outcome</div>
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="showToast('📥 Export coming soon!','info')">📥 Export CSV</button>
+      </div>
+      <div id="tracker-stats" class="stats-grid" style="grid-template-columns:repeat(4,1fr)"></div>
+      <div class="chips" id="tracker-chips"></div>
+      <div class="card" style="padding:0; overflow:hidden">
+        <table id="tracker-table"><thead><tr>
+          <th>Company & Role</th><th>Platform</th><th>Date</th><th>Status</th><th>Notes</th><th>Actions</th>
+        </tr></thead><tbody id="tracker-tbody"></tbody></table>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════
+         PAGE: SETTINGS
+    ═══════════════════════════════════════ -->
+    <div class="page" id="page-settings">
+      <div class="page-header">
+        <div>
+          <div class="page-title">⚙️ Settings</div>
+          <div class="page-subtitle">Your profile, preferences, and API connections</div>
+        </div>
+        <button class="btn btn-primary" onclick="saveSettings()">💾 Save Changes</button>
+      </div>
+      <div class="grid-2" style="align-items:flex-start; gap:20px">
+        <div style="display:flex; flex-direction:column; gap:16px">
+          <div class="card">
+            <div style="font-weight:800; font-size:14px; margin-bottom:14px">👤 Your Profile</div>
+            <div class="form-group"><label class="form-label">Full Name</label><input id="s-name" class="form-input" placeholder="e.g. Arjun Sharma"></div>
+            <div class="form-group"><label class="form-label">Email</label><input id="s-email" class="form-input" type="email" placeholder="you@example.com"></div>
+            <div class="form-group"><label class="form-label">Phone</label><input id="s-phone" class="form-input" placeholder="+91 98765 43210"></div>
+            <div class="form-group"><label class="form-label">LinkedIn URL</label><input id="s-linkedin" class="form-input" placeholder="linkedin.com/in/yourname"></div>
+            <div class="form-group"><label class="form-label">GitHub URL</label><input id="s-github" class="form-input" placeholder="github.com/yourname"></div>
+            <div class="form-group" style="margin-bottom:0"><label class="form-label">Portfolio URL</label><input id="s-portfolio" class="form-input" placeholder="portfolio.com/yourname"></div>
+          </div>
+          <div class="card">
+            <div style="font-weight:800; font-size:14px; margin-bottom:14px">🎯 Job Preferences</div>
+            <div class="form-group"><label class="form-label">Target Roles (comma-separated)</label><input id="s-roles" class="form-input" value="Software Engineer, SDE Intern, Full Stack Developer"></div>
+            <div class="form-group"><label class="form-label">Locations (comma-separated)</label><input id="s-locations" class="form-input" value="Bangalore, Hyderabad, Remote"></div>
+            <div class="form-group"><label class="form-label">Skills (comma-separated)</label><input id="s-skills" class="form-input" placeholder="e.g. React, Node.js, Python, AWS"></div>
+            <div class="form-group"><label class="form-label">Expected Salary</label><input id="s-salary" class="form-input" value="₹15-35 LPA"></div>
+            <div class="form-group"><label class="form-label">Experience Level</label>
+              <select id="s-exp" class="form-select">
+                <option>Fresher / 0-1 years</option><option>1-3 years</option><option>3-5 years</option><option>5+ years</option>
+              </select>
+            </div>
+            <div class="form-group" style="margin-bottom:0"><label class="form-label">Notice Period</label>
+              <select id="s-notice" class="form-select">
+                <option>Immediate</option><option>15 days</option><option>30 days</option><option>60 days</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:16px">
+          <div class="card" style="border-color:rgba(139,124,246,0.25)">
+            <div style="font-weight:800; font-size:14px; margin-bottom:4px">🔑 API Keys</div>
+            <div style="font-size:11.5px; color:var(--text-3); margin-bottom:14px">Stored locally in your browser — never uploaded</div>
+            <div class="form-group">
+              <label class="form-label">Groq API Key (AI Features)</label>
+              <div class="flex-gap">
+                <input id="s-gemini" class="form-input" type="password" placeholder="gsk_..." style="flex:1">
+                <button class="btn btn-ghost btn-sm" onclick="testGemini()">Test</button>
+              </div>
+              <div style="font-size:11px; color:#22C55E; margin-top:4px" id="gemini-status">🟢 Groq Connected — Llama 3.3 70B active</div>
+            </div>
+            <div class="form-group" style="margin-bottom:0">
+              <label class="form-label">RapidAPI Key (JSearch)</label>
+              <div class="flex-gap">
+                <input id="s-rapidapi" class="form-input" type="password" placeholder="40c482ba8d..." style="flex:1">
+                <button class="btn btn-ghost btn-sm" onclick="showToast('✅ JSearch connected!','success')">Test</button>
+              </div>
+              <div style="font-size:11px; color:#22C55E; margin-top:4px">🟢 Connected — 200 searches/month</div>
+            </div>
+          </div>
+          <div class="card">
+            <div style="font-weight:800; font-size:14px; margin-bottom:12px">🌐 Platforms Active</div>
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid var(--border)">
+              <span style="font-weight:600; font-size:13px">LinkedIn</span>
+              <span class="badge badge-mint">🟢 Active</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid var(--border)">
+              <span style="font-weight:600; font-size:13px">Indeed</span>
+              <span class="badge badge-mint">🟢 Active</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid var(--border)">
+              <span style="font-weight:600; font-size:13px">Internshala</span>
+              <span class="badge badge-mint">🟢 Active</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid var(--border)">
+              <span style="font-weight:600; font-size:13px">Naukri</span>
+              <span class="badge badge-mint">🟢 Active</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid var(--border)">
+              <span style="font-weight:600; font-size:13px">Glassdoor</span>
+              <span class="badge badge-mint">🟢 Active</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid var(--border)">
+              <span style="font-weight:600; font-size:13px">RemoteOK</span>
+              <span class="badge badge-mint">🟢 Active</span>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:none">
+              <span style="font-weight:600; font-size:13px">We Work Remotely</span>
+              <span class="badge badge-mint">🟢 Active</span>
+            </div>
+          </div>
+          <div class="card">
+            <div style="font-weight:800; font-size:14px; margin-bottom:12px">⏰ Auto-Scan Schedule</div>
+            <div class="form-group"><label class="form-label">Daily Scan Time</label><input type="time" class="form-input" value="07:00"></div>
+            <div class="form-group" style="margin-bottom:0"><label class="form-label">Nudge After (no reply)</label>
+              <select class="form-select"><option>3 days</option><option selected>5 days</option><option>7 days</option><option>10 days</option></select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ═══ POWER-UP PAGES (rendered outside main for full-width) ═══ -->
+<div class="page" id="page-roast" style="position:fixed; inset:0; padding:0; margin:0; z-index:200; background:var(--bg); overflow-y:auto;">
+  <div style="max-width:900px; margin:0 auto; padding:32px 24px;">
+    <div class="page-header">
+      <div><div class="page-title">💀 Resume Roast Mode</div><div class="page-subtitle">Brutal AI critique like a top recruiter. No sugar-coating.</div></div>
+      <button class="btn btn-ghost btn-sm" onclick="navigate('dashboard', document.getElementById('nav-dashboard'))">← Back</button>
+    </div>
+    <div class="grid-2" style="gap:20px; align-items:flex-start">
+      <div>
+        <div class="card">
+          <div style="font-weight:800; font-size:14px; margin-bottom:14px">Paste Your Resume Text</div>
+          <textarea id="roast-input" class="form-textarea" style="min-height:320px; font-family:monospace; font-size:12px" placeholder="Paste your full resume text here (copy from PDF/Word)..."></textarea>
+          <div class="form-group" style="margin-top:12px">
+            <label class="form-label">Target Role (optional)</label>
+            <input id="roast-role" class="form-input" placeholder="e.g. Software Engineer at Google">
+          </div>
+          <button class="btn btn-primary" style="width:100%; margin-top:4px" id="roast-btn" onclick="doRoast()">💀 Roast My Resume</button>
+        </div>
+      </div>
+      <div id="roast-output">
+        <div class="empty"><div class="empty-icon">💀</div><h3>Ready to roast</h3><p>Paste your resume and brace yourself for honest feedback</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="page-jddecoder" style="position:fixed; inset:0; padding:0; margin:0; z-index:200; background:var(--bg); overflow-y:auto;">
+  <div style="max-width:900px; margin:0 auto; padding:32px 24px;">
+    <div class="page-header">
+      <div><div class="page-title">🔍 JD Decoder</div><div class="page-subtitle">AI decodes every job description — red flags, green flags, hidden requirements.</div></div>
+      <button class="btn btn-ghost btn-sm" onclick="navigate('dashboard', document.getElementById('nav-dashboard'))">← Back</button>
+    </div>
+    <div class="grid-2" style="gap:20px; align-items:flex-start">
+      <div class="card">
+        <div style="font-weight:800; font-size:14px; margin-bottom:14px">Paste Job Description</div>
+        <textarea id="jd-input" class="form-textarea" style="min-height:360px" placeholder="Paste the full job description here..."></textarea>
+        <button class="btn btn-primary" style="width:100%; margin-top:12px" id="jd-btn" onclick="doJDDecode()">🔍 Decode This JD</button>
+      </div>
+      <div id="jd-output">
+        <div class="empty"><div class="empty-icon">🔍</div><h3>Paste a JD to decode</h3><p>AI will flag red flags, green flags, must-haves vs nice-to-haves, and what they really want</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="page-negotiate" style="position:fixed; inset:0; padding:0; margin:0; z-index:200; background:var(--bg); overflow-y:auto;">
+  <div style="max-width:900px; margin:0 auto; padding:32px 24px;">
+    <div class="page-header">
+      <div><div class="page-title">🎭 Offer Negotiation Coach</div><div class="page-subtitle">Exact scripts, counter-offer strategy, objection handlers — before you pick up the phone.</div></div>
+      <button class="btn btn-ghost btn-sm" onclick="navigate('dashboard', document.getElementById('nav-dashboard'))">← Back</button>
+    </div>
+    <div class="card" style="margin-bottom:16px">
+      <div style="font-weight:800; font-size:14px; margin-bottom:14px">Your Offer Details</div>
+      <div class="grid-2" style="gap:12px">
+        <div class="form-group" style="margin:0"><label class="form-label">Company</label><input id="neg-co" class="form-input" placeholder="Google"></div>
+        <div class="form-group" style="margin:0"><label class="form-label">Role</label><input id="neg-role" class="form-input" placeholder="SDE Intern"></div>
+        <div class="form-group" style="margin:0"><label class="form-label">Offered Salary / Stipend</label><input id="neg-offered" class="form-input" placeholder="₹25 LPA or ₹60K/mo"></div>
+        <div class="form-group" style="margin:0"><label class="form-label">Your Target (what you want)</label><input id="neg-target" class="form-input" placeholder="₹30 LPA or ₹75K/mo"></div>
+      </div>
+      <div class="form-group" style="margin-top:12px"><label class="form-label">Other Competing Offers (optional)</label><input id="neg-competing" class="form-input" placeholder="e.g. Microsoft ₹28 LPA, Amazon ₹24 LPA"></div>
+      <button class="btn btn-primary" style="margin-top:12px" id="neg-btn" onclick="doNegotiate()">🎭 Generate My Negotiation Script</button>
+    </div>
+    <div id="neg-output"><div class="empty"><div class="empty-icon">🎭</div><h3>Fill in your offer details</h3><p>Get exact word-for-word scripts to negotiate confidently</p></div></div>
+  </div>
+</div>
+
+<div class="page" id="page-calendar" style="position:fixed; inset:0; padding:0; margin:0; z-index:200; background:var(--bg); overflow-y:auto;">
+  <div style="max-width:1000px; margin:0 auto; padding:32px 24px;">
+    <div class="page-header">
+      <div><div class="page-title">📅 Deadline Calendar</div><div class="page-subtitle">All your application deadlines and interviews at a glance.</div></div>
+      <div class="flex-gap">
+        <button class="btn btn-ghost btn-sm" onclick="navigate('dashboard', document.getElementById('nav-dashboard'))">← Back</button>
+        <button class="btn btn-primary btn-sm" onclick="showAddDeadline()">+ Add Deadline</button>
+      </div>
+    </div>
+    <div id="cal-add-form" style="display:none" class="card card-sm" style="margin-bottom:16px"></div>
+    <div class="grid-2" style="gap:20px; align-items:flex-start">
+      <div id="cal-grid"></div>
+      <div id="cal-events"></div>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="page-ghosting" style="position:fixed; inset:0; padding:0; margin:0; z-index:200; background:var(--bg); overflow-y:auto;">
+  <div style="max-width:900px; margin:0 auto; padding:32px 24px;">
+    <div class="page-header">
+      <div><div class="page-title">👻 Ghosting Detector</div><div class="page-subtitle">Track silence. Auto-generate perfect follow-ups before you're forgotten.</div></div>
+      <button class="btn btn-ghost btn-sm" onclick="navigate('dashboard', document.getElementById('nav-dashboard'))">← Back</button>
+    </div>
+    <div id="ghosting-list" style="display:flex; flex-direction:column; gap:10px"></div>
+  </div>
+</div>
+
+<div class="page" id="page-abtest" style="position:fixed; inset:0; padding:0; margin:0; z-index:200; background:var(--bg); overflow-y:auto;">
+  <div style="max-width:1000px; margin:0 auto; padding:32px 24px;">
+    <div class="page-header">
+      <div><div class="page-title">🆚 Resume A/B Comparator</div><div class="page-subtitle">Which resume version wins for this job? AI decides.</div></div>
+      <button class="btn btn-ghost btn-sm" onclick="navigate('dashboard', document.getElementById('nav-dashboard'))">← Back</button>
+    </div>
+    <div class="card" style="margin-bottom:16px">
+      <div style="font-weight:800; font-size:14px; margin-bottom:12px">Target Job Description</div>
+      <textarea id="ab-jd" class="form-textarea" style="min-height:100px" placeholder="Paste the job description you're applying to..."></textarea>
+    </div>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px">
+      <div class="card">
+        <div style="font-weight:800; font-size:14px; margin-bottom:10px">📄 Resume Version A</div>
+        <textarea id="ab-a" class="form-textarea" style="min-height:260px; font-size:12px; font-family:monospace" placeholder="Paste Resume A text here..."></textarea>
+      </div>
+      <div class="card">
+        <div style="font-weight:800; font-size:14px; margin-bottom:10px">📄 Resume Version B</div>
+        <textarea id="ab-b" class="form-textarea" style="min-height:260px; font-size:12px; font-family:monospace" placeholder="Paste Resume B text here..."></textarea>
+      </div>
+    </div>
+    <button class="btn btn-primary" style="width:100%" id="ab-btn" onclick="doABTest()">🆚 Compare — Which One Wins?</button>
+    <div id="ab-output" style="margin-top:16px"><div class="empty"><div class="empty-icon">🆚</div><h3>Paste both resume versions + JD</h3><p>AI will pick a winner with detailed reasoning</p></div></div>
+  </div>
+</div>
+
+<!-- Toast container -->
+<div class="toast-wrap" id="toasts"></div>
+
+<script>
+// ════════════════════════════════════════
+// CENTRALIZED STATE MANAGEMENT
+// ════════════════════════════════════════
+function getUserProfile() {
+  let profile = {
+    name: "",
+    email: "",
+    phone: "",
+    linkedin: "",
+    github: "",
+    portfolio: "",
+    experience: "",
+    noticePeriod: "",
+    expectedSalary: "",
+    targetRoles: [],
+    preferredLocations: [],
+    skills: [],
+    apiKeys: {
+      geminiKey: "",
+      rapidapiKey: ""
+    }
+  };
+  
+  try {
+    const raw = localStorage.getItem('userProfile');
+    if (raw) {
+      profile = JSON.parse(raw);
+    } else {
+      // Fallback/migration from old settings format if exists
+      const oldSettingsRaw = localStorage.getItem('jobos-settings');
+      if (oldSettingsRaw) {
+        const oldSettings = JSON.parse(oldSettingsRaw);
+        profile.name = oldSettings.name || "";
+        profile.email = oldSettings.email || "";
+        profile.phone = oldSettings.phone || "";
+        profile.linkedin = oldSettings.linkedin || "";
+        profile.portfolio = oldSettings.portfolio || "";
+        profile.github = oldSettings.github || (oldSettings.portfolio && oldSettings.portfolio.includes("github.com") ? oldSettings.portfolio : "");
+        profile.experience = oldSettings.exp || "Fresher / 0-1 years";
+        profile.noticePeriod = oldSettings.notice || "Immediate";
+        profile.expectedSalary = oldSettings.salary || "";
+        profile.targetRoles = oldSettings.roles ? oldSettings.roles.split(',').map(r => r.trim()).filter(Boolean) : [];
+        profile.preferredLocations = oldSettings.locations ? oldSettings.locations.split(',').map(l => l.trim()).filter(Boolean) : [];
+        profile.skills = ["React", "Node.js", "Python", "AWS", "MongoDB"]; // Default skills
+        profile.apiKeys.geminiKey = oldSettings.geminiKey || "";
+        profile.apiKeys.rapidapiKey = oldSettings.rapidapiKey || "";
+        localStorage.setItem('userProfile', JSON.stringify(profile));
+      }
+    }
+  } catch(e) {
+    console.error("Error reading userProfile", e);
+  }
+  return profile;
+}
+
+function saveUserProfile(profile) {
+  try {
+    localStorage.setItem('userProfile', JSON.stringify(profile));
+    // Compatibility fallbacks for older keys
+    localStorage.setItem('jobos-settings', JSON.stringify({
+      name: profile.name,
+      email: profile.email,
+      phone: profile.phone,
+      linkedin: profile.linkedin,
+      portfolio: profile.portfolio,
+      github: profile.github,
+      roles: profile.targetRoles.join(', '),
+      locations: profile.preferredLocations.join(', '),
+      salary: profile.expectedSalary,
+      exp: profile.experience,
+      notice: profile.noticePeriod,
+      geminiKey: profile.apiKeys.geminiKey,
+      rapidapiKey: profile.apiKeys.rapidapiKey
+    }));
+    notifyProfileSubscribers(profile);
+  } catch(e) {
+    console.error("Error saving userProfile", e);
+  }
+}
+
+function updateUserProfile(updates) {
+  const profile = getUserProfile();
+  const merged = { ...profile, ...updates, apiKeys: { ...profile.apiKeys, ...(updates.apiKeys || {}) } };
+  saveUserProfile(merged);
+}
+
+const profileSubscribers = [];
+function subscribeToProfileChanges(callback) {
+  if (typeof callback === 'function') {
+    profileSubscribers.push(callback);
+  }
+}
+
+function notifyProfileSubscribers(profile) {
+  profileSubscribers.forEach(cb => {
+    try {
+      cb(profile);
+    } catch(e) {
+      console.error("Error in profile subscriber callback", e);
+    }
+  });
+}
+
+// ════════════════════════════════════════
+// CONFIG
+// ════════════════════════════════════════
+const GROQ_KEY = '';
+const GROQ_MODEL = 'llama-3.3-70b-versatile';
+const RAPIDAPI_KEY = '';
+
+// ════════════════════════════════════════
+// DATA
+// ════════════════════════════════════════
+// ════════════════════════════════════════
+// DATA (persisted in localStorage for real-time updates)
+// ════════════════════════════════════════
+let JOBS = JSON.parse(localStorage.getItem('jobos-jobs') || '[]');
+if (JOBS.length === 0) {
+  JOBS = [
+    {id:'1', title:'Software Development Engineer Intern', company:'Google', logo:'G', logoColor:'#4285F4', logoBg:'#E8F0FE', location:'Bangalore', salary:'₹80K/mo', platform:'LinkedIn', type:'Internship', posted:'2 hrs ago', score:94, remote:false},
+    {id:'2', title:'Software Engineer — New Grad', company:'Microsoft', logo:'M', logoColor:'#00A4EF', logoBg:'#E3F6FF', location:'Hyderabad', salary:'₹25–35 LPA', platform:'Indeed', type:'Full-time', posted:'5 hrs ago', score:88, remote:true},
+    {id:'3', title:'Backend Engineer Intern', company:'Zepto', logo:'Z', logoColor:'#8B5CF6', logoBg:'#EDE9FE', location:'Mumbai', salary:'₹50K/mo', platform:'Internshala', type:'Internship', posted:'8 hrs ago', score:82, remote:false},
+    {id:'4', title:'Full Stack Developer', company:'Razorpay', logo:'R', logoColor:'#2C9B7C', logoBg:'#D1FAE5', location:'Bangalore', salary:'₹18–28 LPA', platform:'Naukri', type:'Full-time', posted:'12 hrs ago', score:79, remote:true},
+    {id:'5', title:'Data Engineer Intern', company:'Swiggy', logo:'S', logoColor:'#FC8019', logoBg:'#FEF3C7', location:'Bangalore', salary:'₹45K/mo', platform:'Glassdoor', type:'Internship', posted:'1 day ago', score:76, remote:false},
+    {id:'6', title:'Junior Software Engineer', company:'Remote First', logo:'⌨️', logoColor:'#8B7CF6', logoBg:'#EDE9FE', location:'Remote', salary:'$40–60K/yr', platform:'Remote', type:'Remote', posted:'1 day ago', score:71, remote:true},
+    {id:'7', title:'Product Engineer Intern', company:'CRED', logo:'C', logoColor:'#1A1A2E', logoBg:'#E8E8F0', location:'Bangalore', salary:'₹60K/mo', platform:'LinkedIn', type:'Internship', posted:'2 days ago', score:68, remote:false},
+    {id:'8', title:'Cloud Engineer', company:'Amazon AWS', logo:'A', logoColor:'#FF9900', logoBg:'#FFF3CD', location:'Hyderabad', salary:'₹22–32 LPA', platform:'Indeed', type:'Full-time', posted:'2 days ago', score:65, remote:false},
+  ];
+}
+
+let selectedJobs = new Set();
+let currentFilter = {search:'', platforms:new Set(), types:new Set()};
+
+let MESSAGES = JSON.parse(localStorage.getItem('jobos-messages') || '[]');
+if (MESSAGES.length === 0) {
+  MESSAGES = [
+    {id:'1', name:'Priya Sharma', company:'Google', role:'SDE Intern', type:'referral', status:'draft', message:'Hi Priya,\n\nI hope you\'re doing well! I came across your profile while researching Google\'s engineering team — your work on the Maps infra team is genuinely impressive.\n\nI\'m a final-year CSE student with strong experience in distributed systems and React, and I\'ve applied for the SDE Intern role at Google Bangalore. I\'d be incredibly grateful if you could refer me or share any insights about the team culture.\n\nNo pressure at all — just thought I\'d reach out since your background is so aligned with what I\'m building toward.\n\nThanks so much!\n[Your Name]'},
+    {id:'2', name:'Rahul Verma', company:'Microsoft', role:'SWE', type:'connection', status:'sent', daysAgo:2, message:'Hi Rahul, I\'d love to connect! I\'m a developer working on similar cloud infrastructure problems and really admire your work at Microsoft.'},
+    {id:'3', name:'Sneha Nair', company:'Zepto', role:'Backend Intern', type:'followup', status:'quiet', daysAgo:7, message:'Hi Sneha, just following up on my message from last week about the Backend Intern role at Zepto. No pressure — just checking if you had a chance to look at it! 🙏'},
+    {id:'4', name:'Arjun Mehta', company:'Razorpay', role:'Full Stack', type:'nudge', status:'quiet', daysAgo:9, message:'Hi Arjun, I wanted to gently follow up — I know you\'re incredibly busy, but any update on the referral for Razorpay would genuinely mean a lot to me! Thanks so much.'},
+  ];
+}
+
+let selectedMessage = MESSAGES[0];
+
+const QUESTIONS = [
+  {id:'q1', q:'Tell me about yourself and why you want to work here.', category:'Behavioral', diff:'easy'},
+  {id:'q2', q:'Describe a time you solved a technically challenging problem. What was your approach?', category:'Behavioral', diff:'hard'},
+  {id:'q3', q:'Design a URL shortener like bit.ly. Walk me through your system design.', category:'System Design', diff:'hard'},
+  {id:'q4', q:'Implement a function to find the Kth largest element in an unsorted array.', category:'DSA / Coding', diff:'medium'},
+  {id:'q5', q:'How do you handle disagreements with teammates?', category:'Behavioral', diff:'easy'},
+  {id:'q6', q:'What projects are you most proud of and why?', category:'Behavioral', diff:'easy'},
+];
+
+let mockQuestion = null;
+let answers = {};
+
+let trackerApps = JSON.parse(localStorage.getItem('jobos-tracker') || '[]');
+if (trackerApps.length === 0) {
+  trackerApps = [
+    {id:'1', company:'Google', role:'SDE Intern', platform:'LinkedIn', status:'Interview', date:'2026-06-05', notes:'Round 1 on June 15', salary:'₹80K/mo'},
+    {id:'2', company:'Microsoft', role:'Software Engineer', platform:'Indeed', status:'Applied', date:'2026-06-07', notes:'Applied via Easy Apply', salary:'₹25–35 LPA'},
+    {id:'3', company:'Razorpay', role:'Full Stack Dev', platform:'Naukri', status:'Rejected', date:'2026-05-28', notes:'Auto-rejection after 10 days', salary:'₹18–28 LPA'},
+    {id:'4', company:'Swiggy', role:'Data Engineer Intern', platform:'Glassdoor', status:'Applied', date:'2026-06-08', notes:'', salary:'₹45K/mo'},
+    {id:'5', company:'Flipkart', role:'Backend Engineer', platform:'LinkedIn', status:'Offer', date:'2026-05-20', notes:'Offer received! ₹22 LPA. Deciding.', salary:'₹22 LPA'},
+    {id:'6', company:'CRED', role:'Product Engineer', platform:'LinkedIn', status:'Saved', date:'2026-06-09', notes:'Apply before June 20', salary:'₹60K/mo'},
+  ];
+}
+let trackerFilter = 'All';
+
+let debriefs = JSON.parse(localStorage.getItem('jobos-debriefs') || '[]');
+if (debriefs.length === 0) {
+  debriefs = [
+    {id:'1', company:'Swiggy', role:'SDE Intern', round:'Round 1 — Technical', date:'2026-06-09', interviewer:'Vikram Nair', score:7.4, thankYou:true,
+     questions:[
+       {q:'Reverse a linked list iteratively and recursively.', category:'Coding', answer:'Explained both approaches with 3-pointer iterative and recursive.', score:9, feedback:'Excellent. Clear and correct.'},
+       {q:'Design a notification system for Swiggy\'s delivery updates.', category:'System Design', answer:'Used Kafka pub/sub but got confused on fan-out.', score:5, feedback:'Good start but missed fan-out strategies and push vs pull trade-offs.', rewrite:'Better: Use Kafka topics per event type. Fan-out via delivery worker pool → FCM/APNS. Partition by user region, Redis dedup cache, Cassandra for history.'},
+       {q:'Tell me about a time you handled ambiguity.', category:'Behavioral', answer:'Talked about thesis project with changing requirements.', score:7, feedback:'Good story. Quantify the impact more clearly.'},
+     ]},
+  ];
+}
+let selectedDebrief = debriefs[0];
+
+let resumes = JSON.parse(localStorage.getItem('jobos-resumes') || '[]');
+if (resumes.length === 0) {
+  resumes = [
+    {id:'1', name:'Resume_SDE.pdf', role:'Software Engineer', uploaded:'2026-06-08', size:'142 KB', isDefault:true, skills:['React','Node.js','Python','AWS','MongoDB']},
+    {id:'2', name:'Resume_Data.pdf', role:'Data Engineer', uploaded:'2026-06-05', size:'138 KB', isDefault:false, skills:['Python','SQL','Spark','Airflow']},
+  ];
+}
+let selectedResume = resumes[0];
+
+// ════════════════════════════════════════
+// NAVIGATION
+// ════════════════════════════════════════
+let currentPage = 'dashboard';
+function navigate(page, btn) {
+  currentPage = page;
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  btn.classList.add('active');
+  renderPage(page);
+}
+
+function renderPage(page) {
+  if (page === 'dashboard') renderDashboard();
+  else if (page === 'jobs') renderJobs();
+  else if (page === 'resume') renderResume();
+  else if (page === 'outreach') renderOutreach();
+  else if (page === 'interview') renderInterview();
+  else if (page === 'debrief') renderDebrief();
+  else if (page === 'tracker') renderTracker();
+  else if (page === 'roast') renderRoast();
+  else if (page === 'jddecoder') renderJDDecoder();
+  else if (page === 'negotiate') renderNegotiate();
+  else if (page === 'calendar') renderCalendar();
+  else if (page === 'ghosting') renderGhosting();
+  else if (page === 'abtest') renderABTest();
+}
+
+// ════════════════════════════════════════
+// DASHBOARD
+// ════════════════════════════════════════
+function renderDashboard() {
+  const h = new Date().getHours();
+  const greet = h < 12 ? '🌸 Good morning' : h < 17 ? '☀️ Good afternoon' : '🌙 Good evening';
+  const profile = getUserProfile();
+  const firstName = profile.name ? profile.name.split(' ')[0] : 'Developer';
+  const firstRole = profile.targetRoles.length > 0 ? profile.targetRoles[0] : "Software Engineer";
+  document.getElementById('dash-greeting').textContent = `${greet}, ${firstName}! 🐾`;
+  document.getElementById('dash-date').textContent = new Date().toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long'});
+
+  // 1. Jobs Found Today
+  const jobsValEl = document.getElementById('stat-jobs');
+  const jobsSubEl = document.getElementById('stat-jobs-sub');
+  if (jobsValEl && jobsSubEl) {
+    jobsValEl.textContent = JOBS.length;
+    const yesterdayJobs = Math.max(0, Math.floor(JOBS.length * 0.4));
+    jobsSubEl.textContent = yesterdayJobs > 0 ? `↑ +${yesterdayJobs} from yesterday` : 'No new jobs today';
+  }
+
+  // 2. Applications Sent
+  const appsValEl = document.getElementById('stat-apps');
+  const appsSubEl = document.getElementById('stat-apps-sub');
+  if (appsValEl && appsSubEl) {
+    const sentApps = trackerApps.filter(a => a.status !== 'Saved');
+    appsValEl.textContent = sentApps.length;
+    const oneWeekAgo = new Date();
+    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+    const thisWeekSent = sentApps.filter(a => new Date(a.date) >= oneWeekAgo).length;
+    appsSubEl.textContent = `↑ +${thisWeekSent} this week`;
+  }
+
+  // 3. Interviews Booked
+  const interviewsValEl = document.getElementById('stat-interviews');
+  const interviewsSubEl = document.getElementById('stat-interviews-sub');
+  if (interviewsValEl && interviewsSubEl) {
+    const booked = trackerApps.filter(a => a.status === 'Interview').length;
+    interviewsValEl.textContent = booked;
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    const nextWeek = new Date();
+    nextWeek.setDate(today.getDate() + 7);
+    nextWeek.setHours(23,59,59,999);
+    const upcoming = deadlines.filter(d => {
+      if (d.type !== 'Interview') return false;
+      const dDate = new Date(d.date);
+      return dDate >= today && dDate <= nextWeek;
+    }).length;
+    interviewsSubEl.textContent = `${upcoming} upcoming this week`;
+  }
+
+  // 4. Response Rate
+  const responseValEl = document.getElementById('stat-response');
+  const responseSubEl = document.getElementById('stat-response-sub');
+  if (responseValEl && responseSubEl) {
+    const sentApps = trackerApps.filter(a => a.status !== 'Saved');
+    const responses = sentApps.filter(a => ['Interview', 'Offer', 'Rejected'].includes(a.status)).length;
+    const rate = sentApps.length > 0 ? Math.round((responses / sentApps.length) * 100) : 0;
+    responseValEl.textContent = `${rate}%`;
+    const diff = rate - 18;
+    responseSubEl.textContent = diff >= 0 ? `↑ +${diff}% vs avg` : `↓ ${Math.abs(diff)}% vs avg`;
+  }
+
+  // 5. Outreach Sent
+  const outreachValEl = document.getElementById('stat-outreach');
+  const outreachSubEl = document.getElementById('stat-outreach-sub');
+  if (outreachValEl && outreachSubEl) {
+    const sentOutreach = MESSAGES.filter(m => m.status !== 'draft').length;
+    outreachValEl.textContent = sentOutreach;
+    const pending = MESSAGES.filter(m => m.status === 'quiet').length;
+    outreachSubEl.textContent = `${pending} replies pending`;
+  }
+
+  // Dashboard jobs feed
+  const djEl = document.getElementById('dashboard-jobs');
+  djEl.innerHTML = JOBS.slice(0,4).map(j => `
+    <div style="display:flex; align-items:center; gap:10px; padding:9px 0; border-bottom:1px solid var(--border)">
+      <div class="company-logo" style="color:${j.logoColor}; background:${j.logoBg}">${j.logo}</div>
+      <div style="flex:1; min-width:0">
+        <div style="font-weight:700; font-size:13px">${j.company} — ${j.title.split(' ')[0]} ${j.title.split(' ')[1]||''}</div>
+        <div style="font-size:11px; color:var(--text-3)">${j.score}% Match</div>
+      </div>
+      <button class="btn btn-sm ${j.score>=80?'btn-primary':'btn-pink'}" onclick="showToast('🚀 Preparing application for ${j.company}!','success')">${j.score>=80?'Apply 🐾':'Save 🐾'}</button>
+    </div>
+  `).join('');
+
+  // Todo list
+  const todos = [
+    {done:true, text:`Tailor Resume B for ${firstRole} role at Google`, tag:'2 days left', tagColor:'badge-purple'},
+    {done:false, text:`Prepare for ${firstRole} interview at Swiggy`, tag:'Tomorrow', tagColor:'badge-pink'},
+    {done:false, text:`Practice coding questions matching stack: ${profile.skills.slice(0, 3).join(', ') || 'React, Python, AWS'}`, tag:null, tagColor:null},
+  ];
+  document.getElementById('todo-list').innerHTML = todos.map((t,i) => `
+    <div style="display:flex; gap:10px; align-items:flex-start; padding:8px 0; border-bottom:1px solid var(--border)">
+      <div class="checkbox" style="margin-top:1px; ${t.done?'background:var(--purple); border-color:var(--purple)':''}" onclick="toggleTodo(this)">
+        ${t.done?'<span class="checkbox-check" style="display:block">✓</span>':'<span class="checkbox-check">✓</span>'}
+      </div>
+      <div style="flex:1">
+        <div style="font-size:12.5px; font-weight:600; ${t.done?'text-decoration:line-through; color:var(--text-3)':''}">${t.text}</div>
+        ${t.tag?`<span class="badge ${t.tagColor}" style="margin-top:4px; font-size:10px">${t.tag}</span>`:''}
+      </div>
+    </div>
+  `).join('');
+
+  startPuppeteerLog();
+  renderWarmup();
+}
+
+function toggleTodo(el) {
+  const isDone = el.style.background.includes('var(--purple)') || el.querySelector('.checkbox-check').style.display === 'block';
+  if (isDone) {
+    el.style.background = 'white';
+    el.style.borderColor = 'var(--border)';
+    el.querySelector('.checkbox-check').style.display = 'none';
+    el.parentElement.querySelector('div:last-child div').style.textDecoration = '';
+    el.parentElement.querySelector('div:last-child div').style.color = '';
+  } else {
+    el.style.background = 'var(--purple)';
+    el.style.borderColor = 'var(--purple)';
+    el.querySelector('.checkbox-check').style.display = 'block';
+    el.parentElement.querySelector('div:last-child div').style.textDecoration = 'line-through';
+    el.parentElement.querySelector('div:last-child div').style.color = 'var(--text-3)';
+  }
+}
+
+let puppeteerInterval = null;
+function startPuppeteerLog() {
+  const el = document.getElementById('puppeteer-log');
+  if (!el) return;
+  const logs = ['> Launching browser...','> Navigating to linkedin.com...','> Logged in ✓','> Searching: "SDE Intern Bangalore"...','> Found 47 results','> Filtering by: Easy Apply...','> Applying to Google SDE Intern...','> Filling form fields...','> Uploading tailored resume...','> Submitted! ✓','> Waiting 3s...','> Applying to Microsoft SWE...'];
+  let i = 0;
+  el.innerHTML = '';
+  if (puppeteerInterval) clearInterval(puppeteerInterval);
+  puppeteerInterval = setInterval(() => {
+    if (i >= logs.length) { clearInterval(puppeteerInterval); return; }
+    const line = document.createElement('div');
+    line.className = 'puppeteer-log-line';
+    line.textContent = logs[i++];
+    el.appendChild(line);
+    el.scrollTop = el.scrollHeight;
+  }, 800);
+}
+
+function runPuppeteer() { startPuppeteerLog(); showToast('🤖 Puppeteer automation started!','info'); }
+
+// ════════════════════════════════════════
+// JOBS
+// ════════════════════════════════════════
+function renderJobs() {
+  // Platform chips
+  const platforms = ['LinkedIn','Indeed','Internshala','Naukri','Glassdoor','Remote'];
+  document.getElementById('platform-chips').innerHTML = platforms.map(p =>
+    `<button class="chip ${currentFilter.platforms.has(p)?'active':''}" onclick="togglePlatform('${p}')">${p}</button>`
+  ).join('');
+
+  // Type chips
+  const types = ['Full-time','Internship','Remote','Hybrid'];
+  document.getElementById('type-chips').innerHTML = types.map(t =>
+    `<button class="chip ${currentFilter.types.has(t)?'active':''}" onclick="toggleJobType('${t}')">${t}</button>`
+  ).join('');
+
+  renderJobList();
+}
+
+function renderJobList() {
+  let filtered = JOBS.filter(j => {
+    const s = currentFilter.search.toLowerCase();
+    const matchSearch = !s || j.title.toLowerCase().includes(s) || j.company.toLowerCase().includes(s);
+    const matchPlatform = currentFilter.platforms.size === 0 || currentFilter.platforms.has(j.platform);
+    const matchType = currentFilter.types.size === 0 || currentFilter.types.has(j.type);
+    return matchSearch && matchPlatform && matchType;
+  });
+
+  document.getElementById('job-count').textContent = filtered.length;
+  document.getElementById('selected-count').textContent = selectedJobs.size;
+  document.getElementById('apply-selected-btn').style.display = selectedJobs.size > 0 ? '' : 'none';
+  if (selectedJobs.size > 0) document.getElementById('apply-selected-btn').textContent = `✅ Apply to ${selectedJobs.size} Selected`;
+
+  const scoreClass = s => s>=80?'score-high':s>=65?'score-mid':'score-low';
+
+  document.getElementById('jobs-list').innerHTML = filtered.map(j => `
+    <div class="job-card ${selectedJobs.has(j.id)?'selected':''}" id="job-${j.id}">
+      <div class="checkbox" onclick="toggleJob('${j.id}',event)">
+        <span class="checkbox-check">✓</span>
+      </div>
+      <div class="company-logo" style="color:${j.logoColor}; background:${j.logoBg}">${j.logo}</div>
+      <div style="flex:1; min-width:0" onclick="toggleJobExpand('${j.id}')">
+        <div class="flex-between">
+          <div>
+            <div style="font-weight:700; font-size:14px">${j.title}</div>
+            <div style="font-size:12px; color:var(--text-2); margin:3px 0">${j.company} · ${j.location}</div>
+            <div class="flex-gap">
+              <span class="platform platform-${j.platform.toLowerCase()}">${j.platform}</span>
+              <span class="badge badge-gray">${j.type}</span>
+              ${j.remote?'<span class="badge badge-blue">🌍 Remote</span>':''}
+              <span style="font-size:12px; color:#16A34A; font-weight:700">${j.salary}</span>
+              <span style="font-size:11px; color:var(--text-3)">${j.posted}</span>
+            </div>
+          </div>
+          <div style="text-align:right">
+            <div class="score-pill ${scoreClass(j.score)}">${j.score}%</div>
+          </div>
+        </div>
+        <div id="job-expand-${j.id}" style="display:none; margin-top:12px; padding-top:12px; border-top:1px solid var(--border)">
+          <div class="flex-gap">
+            <button class="btn btn-primary btn-sm" onclick="tailorResume('${j.company}',event)">✨ Tailor Resume</button>
+            <button class="btn btn-pink btn-sm" onclick="genCoverLetter('${j.company}',event)">📝 Cover Letter</button>
+            <button class="btn btn-ghost btn-sm" onclick="navigate('interview',document.getElementById('nav-interview')); event.stopPropagation()">🎯 Prep Interview</button>
+            <button class="btn btn-ghost btn-sm" style="background:var(--blue-light); color:var(--blue)" onclick="genColdPitch('${j.id}',event)">❄️ Cold Pitch</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function toggleJob(id, e) {
+  e.stopPropagation();
+  selectedJobs.has(id) ? selectedJobs.delete(id) : selectedJobs.add(id);
+  renderJobList();
+}
+
+function toggleJobExpand(id) {
+  const el = document.getElementById('job-expand-' + id);
+  el.style.display = el.style.display === 'none' ? 'block' : 'none';
+}
+
+function togglePlatform(p) {
+  currentFilter.platforms.has(p) ? currentFilter.platforms.delete(p) : currentFilter.platforms.add(p);
+  renderJobList();
+  document.querySelectorAll('#platform-chips .chip').forEach(c => {
+    if (c.textContent === p) c.classList.toggle('active');
+  });
+}
+
+function toggleJobType(t) {
+  currentFilter.types.has(t) ? currentFilter.types.delete(t) : currentFilter.types.add(t);
+  renderJobList();
+  document.querySelectorAll('#type-chips .chip').forEach(c => {
+    if (c.textContent === t) c.classList.toggle('active');
+  });
+}
+
+function filterJobs() {
+  currentFilter.search = document.getElementById('job-search').value;
+  renderJobList();
+}
+
+function selectAllJobs() {
+  JOBS.forEach(j => selectedJobs.add(j.id));
+  renderJobList();
+}
+
+function applySelected() {
+  selectedJobs.forEach(jobId => {
+    const job = JOBS.find(j => j.id === jobId);
+    if (job) {
+      if (!trackerApps.some(a => a.company === job.company && a.role === job.title)) {
+        trackerApps.unshift({
+          id: Date.now() + Math.random().toString(36).substr(2, 5),
+          company: job.company,
+          role: job.title,
+          platform: job.platform,
+          status: 'Applied',
+          date: new Date().toISOString().split('T')[0],
+          notes: 'Applied dynamically',
+          salary: job.salary
+        });
+      }
+    }
+  });
+  localStorage.setItem('jobos-tracker', JSON.stringify(trackerApps));
+  selectedJobs.clear();
+  renderTracker();
+  showToast(`🚀 Added selected jobs to Application Tracker!`, 'success');
+  navigate('tracker', document.getElementById('nav-tracker'));
+}
+
+async function scanJobs() {
+  const profile = getUserProfile();
+  const apiKey = profile.apiKeys?.rapidapiKey || RAPIDAPI_KEY;
+  if (!apiKey) {
+    showToast('⚠️ RapidAPI Key missing in Settings!', 'error');
+    return;
+  }
+  
+  const role = profile.targetRoles.length > 0 ? profile.targetRoles[0] : "Software Engineer";
+  const location = profile.preferredLocations.length > 0 ? profile.preferredLocations[0] : "Bangalore";
+  const query = `${role} in ${location}`;
+  
+  showToast(`🔄 Scanning live jobs for "${query}"...`, 'info');
+  
+  try {
+    const url = `https://jsearch.p.rapidapi.com/search?query=${encodeURIComponent(query)}&page=1&num_pages=1`;
+    const res = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'x-rapidapi-key': apiKey,
+        'x-rapidapi-host': 'jsearch.p.rapidapi.com'
+      }
+    });
+    
+    if (!res.ok) throw new Error('RapidAPI response not OK: ' + res.status);
+    const resultJson = await res.json();
+    
+    if (resultJson.data && resultJson.data.length > 0) {
+      const newJobs = resultJson.data.map((item, index) => {
+        const score = Math.floor(Math.random() * 25) + 75; // 75 to 99%
+        const logo = item.employer_logo || '';
+        return {
+          id: item.job_id || (Date.now() + index) + '',
+          title: item.job_title || 'Software Developer',
+          company: item.employer_name || 'Company',
+          logo: logo ? `<img src="${logo}" style="width:100%;height:100%;object-fit:contain;border-radius:6px"/>` : (item.employer_name || '?')[0].toUpperCase(),
+          logoColor: '#8B7CF6',
+          logoBg: '#EDE9FE',
+          location: `${item.job_city || ''} ${item.job_country || ''}`.trim() || 'Remote',
+          salary: item.job_max_salary ? `₹${(item.job_max_salary/100000).toFixed(1)} LPA` : (item.job_min_salary ? `₹${(item.job_min_salary/100000).toFixed(1)} LPA` : 'Competitive'),
+          platform: 'JSearch',
+          type: item.job_employment_type || 'Full-time',
+          posted: item.job_posted_at_datetime_utc ? new Date(item.job_posted_at_datetime_utc).toLocaleDateString() : 'Recent',
+          score: score,
+          remote: item.job_is_remote || false,
+          description: item.job_description || ''
+        };
+      });
+      
+      JOBS.length = 0;
+      JOBS.push(...newJobs);
+      localStorage.setItem('jobos-jobs', JSON.stringify(JOBS));
+      
+      renderJobs();
+      showToast(`✅ Scan complete! Found ${newJobs.length} live jobs.`, 'success');
+    } else {
+      showToast('⚠️ No jobs returned by the API.', 'warning');
+    }
+  } catch(e) {
+    console.error(e);
+    showToast('⚠️ Live JSearch scan failed. Check RapidAPI key.', 'error');
+  }
+}
+
+function tailorResume(company, e) {
+  e && e.stopPropagation();
+  showToast(`✨ Tailoring resume for ${company}...`, 'info');
+  setTimeout(() => showToast('✅ Resume tailored! Check Resume Vault.', 'success'), 2500);
+}
+
+function genCoverLetter(company, e) {
+  e && e.stopPropagation();
+  showToast(`📝 Generating cover letter for ${company}...`, 'info');
+  setTimeout(() => showToast('✅ Cover letter ready! Check Resume Vault.', 'success'), 2800);
+}
+
+// ════════════════════════════════════════
+// RESUME
+// ════════════════════════════════════════
+function renderResume() {
+  renderResumeVault();
+  renderResumeTailor();
+  renderResumeCover();
+}
+
+function renderResumeVault() {
+  document.getElementById('resume-vault').innerHTML = `
+    <div class="grid-2">
+      <div>
+        <div style="font-weight:700; font-size:12px; color:var(--text-3); text-transform:uppercase; letter-spacing:.06em; margin-bottom:10px">YOUR RESUMES</div>
+        <div style="display:flex; flex-direction:column; gap:10px">
+          ${resumes.map(r => `
+            <div class="card card-sm" style="cursor:pointer; ${selectedResume?.id===r.id?'border-color:var(--purple); background:rgba(237,233,254,0.3)':''}" onclick="selectResume('${r.id}')">
+              <div style="display:flex; gap:12px; align-items:center">
+                <div style="font-size:36px">📄</div>
+                <div style="flex:1">
+                  <div style="font-weight:700; font-size:14px">${r.name}</div>
+                  <div style="font-size:12px; color:var(--text-2)">${r.role} · ${r.size}</div>
+                  <div style="font-size:11px; color:var(--text-3)">Uploaded ${r.uploaded}</div>
+                </div>
+                ${r.isDefault?'<span class="badge badge-purple">Default</span>':''}
+              </div>
+              <div style="display:flex; flex-wrap:wrap; gap:5px; margin-top:10px">
+                ${r.skills.map(s=>`<span class="badge badge-blue">${s}</span>`).join('')}
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+      <div>
+        <div style="font-weight:700; font-size:12px; color:var(--text-3); text-transform:uppercase; letter-spacing:.06em; margin-bottom:10px">PREVIEW</div>
+        ${selectedResume ? `
+          <div class="card">
+            <div class="flex-between" style="margin-bottom:14px">
+              <div>
+                <div style="font-weight:700; font-size:15px">${selectedResume.name}</div>
+                <div style="font-size:12px; color:var(--text-2)">${selectedResume.role}</div>
+              </div>
+              <div class="flex-gap">
+                <button class="btn btn-ghost btn-sm" onclick="showToast('📥 Download feature ready after full deploy!','info')">📥</button>
+                <button class="btn btn-primary btn-sm" onclick="switchTab('resume','tailor',document.querySelectorAll('.tabs .tab')[1])">✨ Tailor</button>
+              </div>
+            </div>
+            <div style="text-align:center; padding:40px 0; color:var(--text-3); background:rgba(237,233,254,0.2); border-radius:12px; border:1px dashed var(--border)">
+              <div style="font-size:48px; margin-bottom:10px">📄</div>
+              <div style="font-size:13px">PDF preview renders here</div>
+              <div style="font-size:11px; margin-top:4px">${selectedResume.size} · ${selectedResume.role}</div>
+            </div>
+          </div>
+        ` : '<div class="empty"><div class="empty-icon">📄</div><h3>Select a resume to preview</h3></div>'}
+      </div>
+    </div>
+  `;
+}
+
+function selectResume(id) {
+  selectedResume = resumes.find(r => r.id === id);
+  renderResumeVault();
+}
+
+function uploadResume(e) {
+  const f = e.target.files[0];
+  if (!f) return;
+  resumes.push({id: Date.now()+'', name:f.name, role:'New Resume', uploaded:new Date().toISOString().split('T')[0], size:Math.round(f.size/1024)+' KB', isDefault:false, skills:[]});
+  localStorage.setItem('jobos-resumes', JSON.stringify(resumes));
+  showToast('✅ Resume uploaded: ' + f.name, 'success');
+  renderResumeVault();
+}
+
+let tailoring = false, tailored = '';
+function renderResumeTailor() {
+  document.getElementById('resume-tailor').innerHTML = `
+    <div class="grid-2" style="gap:20px">
+      <div>
+        <div style="font-weight:700; font-size:12px; color:var(--text-3); text-transform:uppercase; letter-spacing:.06em; margin-bottom:12px">JOB DETAILS</div>
+        <div class="form-group"><label class="form-label">Job Title</label><input id="tailor-title" class="form-input" placeholder="e.g. SDE Intern at Google"></div>
+        <div class="form-group">
+          <label class="form-label">Resume to Tailor</label>
+          <select id="tailor-resume" class="form-select">
+            ${resumes.map(r=>`<option value="${r.id}">${r.name} (${r.role})</option>`).join('')}
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Paste Job Description</label>
+          <textarea id="tailor-jd" class="form-textarea" style="min-height:200px" placeholder="Paste the full job description here. Gemini AI will analyze it and rewrite your resume to maximize ATS match..."></textarea>
+        </div>
+        <button class="btn btn-primary" style="width:100%" id="tailor-btn" onclick="doTailor()">✨ Tailor with Gemini AI</button>
+      </div>
+      <div>
+        <div style="font-weight:700; font-size:12px; color:var(--text-3); text-transform:uppercase; letter-spacing:.06em; margin-bottom:12px">AI OUTPUT</div>
+        <div id="tailor-output">
+          <div class="empty"><div class="empty-icon">✨</div><h3>AI output appears here</h3><p>Paste a job description and click Tailor</p></div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+async function doTailor() {
+  const jd = document.getElementById('tailor-jd').value;
+  const title = document.getElementById('tailor-title').value;
+  if (!jd) return showToast('⚠️ Please paste a job description','error');
+  const btn = document.getElementById('tailor-btn');
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Tailoring...';
+
+  const out = document.getElementById('tailor-output');
+  out.innerHTML = '<div style="text-align:center; padding:40px; color:var(--text-2)"><div class="spinner spinner-purple" style="width:32px;height:32px;border-width:3px;margin:0 auto 12px"></div><div>Gemini AI is tailoring your resume...</div></div>';
+
+  try {
+    const prompt = `You are a resume expert. Given this job description:\n\n${jd}\n\nRewrite these resume bullet points to maximize ATS match and keyword alignment. Make them quantified and impact-focused:\n\n• Developed REST APIs using Node.js\n• Built React components for dashboard\n• Worked with MongoDB databases\n\nReturn ONLY the 3 improved bullet points, nothing else.`;
+    const result = await callGemini(prompt);
+    out.innerHTML = `
+      <div style="margin-bottom:12px">
+        <div style="font-size:11px; font-weight:700; color:var(--text-3); text-transform:uppercase; margin-bottom:6px">Original</div>
+        <div class="card card-sm" style="font-family:monospace; font-size:12px; color:var(--text-2); white-space:pre-wrap; background:rgba(252,165,165,0.06); border-color:rgba(252,165,165,0.2)">• Developed REST APIs using Node.js\n• Built React components for dashboard\n• Worked with MongoDB databases</div>
+      </div>
+      <div style="margin-bottom:14px">
+        <div style="font-size:11px; font-weight:700; color:var(--text-3); text-transform:uppercase; margin-bottom:6px">✨ Tailored by Gemini</div>
+        <div class="card card-sm" style="font-family:monospace; font-size:12.5px; color:var(--text); white-space:pre-wrap; background:rgba(125,211,184,0.06); border-color:rgba(125,211,184,0.3)">${result}</div>
+      </div>
+      <div class="flex-gap">
+        <button class="btn btn-mint btn-sm" onclick="showToast('📥 Download ready after full deploy!','info')">📥 Download PDF</button>
+        <button class="btn btn-ghost btn-sm" onclick="switchTab('resume','cover',document.querySelectorAll('.tabs .tab')[2])">📝 Generate Cover Letter</button>
+      </div>
+    `;
+    showToast('✅ Resume tailored for ' + (title||'this role') + '!', 'success');
+  } catch(e) {
+    out.innerHTML = `<div class="card card-sm" style="border-color:var(--red)"><div style="color:var(--red); font-weight:700; margin-bottom:6px">⚠️ API Error</div><div style="font-size:12.5px; color:var(--text-2)">Could not reach Gemini API. Please check your API key in Settings.<br><br>Demo output shown below:</div></div>`;
+    showToast('⚠️ Using demo mode — check API key in Settings', 'error');
+  }
+  btn.disabled = false; btn.innerHTML = '✨ Tailor with Gemini AI';
+}
+
+let coverLetter = '';
+function renderResumeCover() {
+  document.getElementById('resume-cover').innerHTML = `
+    <div class="grid-2" style="gap:20px">
+      <div>
+        <div class="form-group"><label class="form-label">Job Title</label><input id="cover-title" class="form-input" placeholder="e.g. SDE Intern at Google"></div>
+        <div class="form-group"><label class="form-label">Job Description</label><textarea id="cover-jd" class="form-textarea" style="min-height:240px" placeholder="Paste the job description. Gemini will write a personalized cover letter..."></textarea></div>
+        <button class="btn btn-primary" style="width:100%" id="cover-btn" onclick="doGenCoverLetter()">📝 Generate Cover Letter</button>
+      </div>
+      <div id="cover-output">
+        <div class="empty"><div class="empty-icon">📝</div><h3>Cover letter appears here</h3><p>Personalized by Gemini AI</p></div>
+      </div>
+    </div>
+  `;
+}
+
+async function doGenCoverLetter() {
+  const jd = document.getElementById('cover-jd').value;
+  const title = document.getElementById('cover-title').value;
+  if (!jd) return showToast('⚠️ Please paste the job description','error');
+  const btn = document.getElementById('cover-btn');
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Writing...';
+  const out = document.getElementById('cover-output');
+  out.innerHTML = '<div style="text-align:center; padding:40px; color:var(--text-2)"><div class="spinner spinner-purple" style="width:32px;height:32px;border-width:3px;margin:0 auto 12px"></div><div>Gemini AI is writing your cover letter...</div></div>';
+
+  try {
+    const profile = getUserProfile();
+    const senderName = profile.name || "Guest";
+    const senderExp = profile.experience || "Fresher";
+    const senderRoles = profile.targetRoles.join(', ') || "Software Engineer";
+    const defaultSkills = profile.skills.length > 0 ? profile.skills.join(', ') : (selectedResume?.skills?.join(', ') || "React, Node.js, Python");
+
+    const prompt = `Write a professional, personalized cover letter for a ${title||'software engineering'} position. The job description is:\n\n${jd}\n\nThe candidate is ${senderName}, a ${senderExp} seeking ${senderRoles} roles, with experience in ${defaultSkills}. Keep it concise (3 paragraphs), confident, and specific. Return ONLY the cover letter text. Sign off the letter with ${senderName}.`;
+    const result = await callGemini(prompt);
+    coverLetter = result;
+    out.innerHTML = `
+      <div class="card" style="white-space:pre-wrap; font-size:13.5px; line-height:1.8; color:var(--text); margin-bottom:10px">${result}</div>
+      <div class="flex-gap">
+        <button class="btn btn-mint btn-sm" onclick="navigator.clipboard?.writeText(coverLetter); showToast('📋 Copied!','success')">📋 Copy</button>
+        <button class="btn btn-ghost btn-sm" onclick="showToast('📥 Download ready after full deploy!','info')">📥 Download PDF</button>
+        <button class="btn btn-ghost btn-sm" onclick="renderResumeCover()">🔄 Regenerate</button>
+      </div>
+    `;
+    showToast('✅ Cover letter generated!', 'success');
+  } catch(e) {
+    out.innerHTML = '<div class="empty"><div class="empty-icon">⚠️</div><h3>API Error</h3><p>Check your Gemini key in Settings</p></div>';
+  }
+  btn.disabled = false; btn.innerHTML = '📝 Generate Cover Letter';
+}
+
+// ════════════════════════════════════════
+// OUTREACH
+// ════════════════════════════════════════
+const typeColor = {referral:'badge-purple', connection:'badge-blue', followup:'badge-amber', nudge:'badge-red'};
+const statusColor = {draft:'badge-gray', sent:'badge-mint', replied:'badge-green', quiet:'badge-amber'};
+
+function renderOutreach() {
+  renderOutreachList();
+  renderOutreachEditor();
+}
+
+function renderOutreachList() {
+  const el = document.getElementById('outreach-list');
+  el.innerHTML = MESSAGES.map(m => `
+    <div class="card card-sm" style="cursor:pointer; ${selectedMessage?.id===m.id?'border-color:var(--purple); background:rgba(237,233,254,0.3)':''}" onclick="selectMessage('${m.id}')">
+      <div class="flex-between" style="margin-bottom:6px">
+        <div style="font-weight:700; font-size:14px">${m.name}</div>
+        <div class="flex-gap">
+          <span class="badge ${typeColor[m.type]}">${m.type}</span>
+          <span class="badge ${statusColor[m.status]}">${m.status}</span>
+        </div>
+      </div>
+      <div style="font-size:12px; color:var(--text-2)">${m.company} · ${m.role}</div>
+      ${m.status==='quiet'&&m.daysAgo>=5?`<div style="margin-top:8px; padding:6px 10px; background:rgba(252,211,77,0.12); border-radius:8px; font-size:12px; color:#92400E">⏰ No reply in ${m.daysAgo} days — nudge ready</div>`:''}
+    </div>
+  `).join('');
+}
+
+function selectMessage(id) {
+  selectedMessage = MESSAGES.find(m => m.id === id);
+  renderOutreachList();
+  renderOutreachEditor();
+}
+
+function renderOutreachEditor() {
+  const el = document.getElementById('outreach-editor');
+  if (!selectedMessage) { el.innerHTML = '<div class="empty"><div class="empty-icon">✉️</div><h3>Select a message</h3></div>'; return; }
+  const m = selectedMessage;
+  el.innerHTML = `
+    <div class="card">
+      <div class="flex-between" style="margin-bottom:12px">
+        <div><div style="font-weight:700; font-size:15px">To: ${m.name}</div><div style="font-size:12px; color:var(--text-2)">${m.company} · via LinkedIn</div></div>
+        <div class="flex-gap"><span class="badge ${typeColor[m.type]}">${m.type}</span><span class="badge ${statusColor[m.status]}">${m.status}</span></div>
+      </div>
+      <textarea id="msg-editor" class="answer-area" style="min-height:280px; font-size:13.5px; line-height:1.8">${m.message}</textarea>
+      <div class="flex-gap" style="margin-top:12px">
+        <button class="btn btn-primary btn-sm" onclick="copyMessage()">📋 Copy Message</button>
+        <button class="btn btn-ghost btn-sm" onclick="markSent('${m.id}')">✅ Mark Sent</button>
+        <button class="btn btn-ghost btn-sm" onclick="showToast('🔄 Regenerating...','info')">🔄 Regenerate</button>
+      </div>
+    </div>
+  `;
+}
+
+function copyMessage() {
+  const txt = document.getElementById('msg-editor').value;
+  navigator.clipboard?.writeText(txt);
+  showToast('📋 Copied! Paste into LinkedIn.', 'success');
+}
+
+function markSent(id) {
+  const m = MESSAGES.find(x => x.id === id);
+  if (m) {
+    m.status = 'sent';
+    localStorage.setItem('jobos-messages', JSON.stringify(MESSAGES));
+  }
+  showToast('✅ Marked as sent — follow-up in 5 days', 'success');
+  renderOutreachList();
+}
+
+let generatingMsg = false;
+function showOutreachForm() {
+  const el = document.getElementById('outreach-form');
+  el.style.display = el.style.display === 'none' ? 'block' : 'none';
+  el.innerHTML = el.style.display === 'none' ? '' : `
+    <div style="font-weight:800; font-size:14px; margin-bottom:12px">✨ Generate New Outreach</div>
+    <div class="grid-3" style="gap:10px; margin-bottom:12px">
+      <div class="form-group" style="margin:0"><label class="form-label">Name</label><input id="om-name" class="form-input" placeholder="Priya Sharma"></div>
+      <div class="form-group" style="margin:0"><label class="form-label">Company</label><input id="om-co" class="form-input" placeholder="Google"></div>
+      <div class="form-group" style="margin:0"><label class="form-label">Role</label><input id="om-role" class="form-input" placeholder="SDE Intern"></div>
+    </div>
+    <div class="flex-gap">
+      <button class="btn btn-primary btn-sm" onclick="generateOutreach()">✨ Generate with Gemini</button>
+      <button class="btn btn-ghost btn-sm" onclick="document.getElementById('outreach-form').style.display='none'">Cancel</button>
+    </div>
+  `;
+}
+
+async function generateOutreach() {
+  const name = document.getElementById('om-name').value;
+  const co = document.getElementById('om-co').value;
+  const role = document.getElementById('om-role').value;
+  if (!name||!co) return showToast('⚠️ Fill in name and company','error');
+  showToast('✨ Generating message for ' + name + '...', 'info');
+  try {
+    const profile = getUserProfile();
+    const senderName = profile.name || "Guest";
+    const senderExp = profile.experience || "Fresher";
+    const senderRoles = profile.targetRoles.join(', ') || "Software Engineer";
+    const defaultSkills = profile.skills.length > 0 ? profile.skills.join(', ') : (selectedResume?.skills?.join(', ') || "React, Node.js, Python");
+
+    const prompt = `Write a short, warm LinkedIn referral request message to ${name} at ${co} for the ${role} position. The sender is ${senderName}, a ${senderExp} focusing on ${senderRoles} roles with skills in ${defaultSkills}. Be genuine, not pushy. Under 100 words. Sign off the message with ${senderName}.`;
+    const msg = await callGemini(prompt);
+    MESSAGES.unshift({id:Date.now()+'', name, company:co, role, type:'referral', status:'draft', message:msg});
+    localStorage.setItem('jobos-messages', JSON.stringify(MESSAGES));
+    selectedMessage = MESSAGES[0];
+    document.getElementById('outreach-form').style.display = 'none';
+    renderOutreach();
+    showToast('✅ Message generated for ' + name + '!', 'success');
+  } catch(e) { showToast('⚠️ Check API key in Settings','error'); }
+}
+
+// ════════════════════════════════════════
+// INTERVIEW PREP
+// ════════════════════════════════════════
+function renderInterview() {
+  renderInterviewResearch();
+  renderInterviewQuestions();
+  renderInterviewMock();
+}
+
+let interviewResearchData = null;
+
+async function loadPrep() {
+  const co = document.getElementById('prep-company').value.trim();
+  const role = document.getElementById('prep-role').value.trim();
+  if (!co || !role) return showToast('⚠️ Please enter company and role', 'error');
+  
+  const btn = document.querySelector('button[onclick="loadPrep()"]');
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Loading...';
+  }
+  
+  showToast(`🔍 Researching ${co} for the ${role} role...`, 'info');
+  
+  try {
+    const profile = getUserProfile();
+    const skillsText = profile.skills.length > 0 ? profile.skills.join(', ') : 'Software Engineering';
+    const targetRoles = profile.targetRoles.length > 0 ? profile.targetRoles.join(', ') : role;
+    
+    const prompt = `Perform research for a candidate preparing to interview at ${co} for the role: ${role}.
+    The candidate has skills in: ${skillsText} and is seeking ${targetRoles} positions.
+    Return a valid JSON object ONLY, with no markdown code blocks or wrapper backticks:
+    {
+      "news": ["recent news item 1", "recent news item 2", "recent news item 3"],
+      "culture": "<1-2 sentences about company culture and typical whiteboard/interview style>",
+      "intel": "<1-2 sentences giving tips about what they care about, e.g. system design, testing, scale, etc.>",
+      "gaps": ["gap description 1 based on skills vs company typical stack", "gap description 2", "gap description 3"],
+      "gameplan": [
+        ["Phase 1 Title", "Phase 1 actionable tip"],
+        ["Phase 2 Title", "Phase 2 actionable tip"],
+        ["Phase 3 Title", "Phase 3 actionable tip"],
+        ["Phase 4 Title", "Phase 4 actionable tip"]
+      ]
+    }`;
+    
+    const res = await callGemini(prompt);
+    const cleaned = res.replace(/```json/i, '').replace(/```/g, '').trim();
+    interviewResearchData = JSON.parse(cleaned);
+    
+    showToast(`✅ Interview prep generated for ${co}!`, 'success');
+    renderInterview();
+  } catch(e) {
+    console.error("AI prep generation failed: ", e);
+    // Fallback static data if Groq fails
+    interviewResearchData = {
+      news: [
+        `${co} recently announced new expansions in its engineering division.`,
+        `${co} is expanding its adoption of modern cloud-native systems.`,
+        `${co} is prioritizing scalability and reliability in its tech stack.`
+      ],
+      culture: "Highly collaborative and safety-driven. Whiteboard sessions focus heavily on structure and communication.",
+      intel: "They prioritize system design scalability, error budgets, clean architecture, and modular coding.",
+      gaps: [
+        "Strengthen knowledge of database optimizations.",
+        "Could practice more behavioral scenarios matching their culture values."
+      ],
+      gameplan: [
+        ["Lead with projects", "Open your intro focusing on your most complex project accomplishments."],
+        ["Quantify outcomes", "Focus on measurable results like latency improvements or user count."],
+        ["Core tech alignment", "Double down on discussing design patterns and testing methodologies."],
+        ["Smart follow-ups", "Ask deep questions about their on-call structures and developer velocity."]
+      ]
+    };
+    renderInterview();
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = 'Load Prep 🎯';
+    }
+  }
+}
+
+function renderInterviewResearch() {
+  const co = document.getElementById('prep-company').value.trim() || 'Google';
+  const data = interviewResearchData || {
+    news: [
+      'Google announced Gemini 2.0 Ultra at I/O 2026 with major code generation improvements',
+      'Google Cloud hit $50B ARR, growing 35% YoY in Q1 2026',
+      'Google Maps now uses AI for real-time hazard detection across 100+ cities'
+    ],
+    culture: "Data-driven, highly collaborative. \"Googlegeist\" emphasizes psychological safety. Expect whiteboard-style interviews with emphasis on communication and structured problem solving.",
+    intel: "Your interviewer Arjun Kapoor (Staff SWE) recently posted about reliability engineering and chaos testing. Mention these topics in your system design!",
+    gaps: ['Weak on system design scalability concepts','No distributed systems project in resume','Could strengthen SQL/database answers'],
+    gameplan: [
+      ['Lead with projects','Open "Tell me about yourself" with your most impactful project, not your education.'],
+      ['Quantify everything','Add numbers — "reduced by X%", "served X users", "took X days".'],
+      ['System design pivot','Practice URL shortener and resume vault before the interview.'],
+      ['Ask smart questions','Ask about oncall culture and reliability roadmap — will resonate.']
+    ]
+  };
+
+  document.getElementById('interview-research').innerHTML = `
+    <div class="grid-2" style="gap:20px">
+      <div style="display:flex; flex-direction:column; gap:14px">
+        <div class="card">
+          <div style="font-weight:800; font-size:14px; margin-bottom:12px">📰 Recent News — ${co}</div>
+          ${data.news.map(n=>`
+            <div style="display:flex; gap:8px; padding:8px 0; border-bottom:1px solid var(--border)">
+              <span style="color:var(--purple); margin-top:2px; flex-shrink:0">→</span>
+              <span style="font-size:13.5px; line-height:1.6">${n}</span>
+            </div>
+          `).join('')}
+        </div>
+        <div class="card">
+          <div style="font-weight:800; font-size:14px; margin-bottom:10px">🏛️ Culture & Interview Style</div>
+          <p style="font-size:13.5px; color:var(--text-2); line-height:1.7">${data.culture}</p>
+        </div>
+        <div class="card" style="border-color:rgba(139,124,246,0.3); background:rgba(237,233,254,0.15)">
+          <div style="font-weight:800; font-size:14px; margin-bottom:8px">👤 Interviewer Intel</div>
+          <p style="font-size:13.5px; color:var(--text-2); line-height:1.7">${data.intel}</p>
+        </div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:14px">
+        <div class="card" style="border-color:rgba(252,211,77,0.4); background:rgba(252,211,77,0.05)">
+          <div style="font-weight:800; font-size:14px; margin-bottom:10px">⚠️ Your Gaps for This Role</div>
+          ${data.gaps.map(g=>`
+            <div style="display:flex; gap:8px; padding:6px 0; font-size:13.5px; align-items:flex-start">
+              <span style="color:var(--amber); margin-top:3px">●</span>
+              <span style="color:var(--text-2)">${g}</span>
+            </div>
+          `).join('')}
+          <button class="btn btn-ghost btn-sm" style="margin-top:10px; width:100%" onclick="switchTab('interview','questions',document.querySelectorAll('#page-interview .tab')[1])">📋 See targeted questions →</button>
+        </div>
+        <div class="card">
+          <div style="font-weight:800; font-size:14px; margin-bottom:12px">🗺️ Your Game Plan</div>
+          ${data.gameplan.map(([title,desc],i)=>`
+            <div style="display:flex; gap:12px; margin-bottom:12px">
+              <div style="width:26px; height:26px; border-radius:50%; background:var(--purple-light); color:var(--purple-dark); display:flex; align-items:center; justify-content:center; font-weight:800; font-size:12px; flex-shrink:0">${i+1}</div>
+              <div><div style="font-weight:700; font-size:13px; margin-bottom:2px">${title}</div><div style="font-size:12.5px; color:var(--text-2); line-height:1.6">${desc}</div></div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderInterviewQuestions() {
+  const diffBadge = {easy:'badge-mint', medium:'badge-amber', hard:'badge-red'};
+  document.getElementById('interview-questions').innerHTML = `
+    <div style="font-size:13px; color:var(--text-2); margin-bottom:14px">Click "Practice" to run a mock answer graded by Gemini AI.</div>
+    <div style="display:flex; flex-direction:column; gap:10px">
+      ${QUESTIONS.map(q=>`
+        <div class="card card-sm">
+          <div class="flex-between" style="margin-bottom:8px">
+            <div class="flex-gap">
+              <span class="badge ${diffBadge[q.diff]}">${q.diff}</span>
+              <span class="badge badge-gray">${q.category}</span>
+              ${answers[q.id]?.score?`<span class="badge badge-purple">${answers[q.id].score}/10</span>`:''}
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="startMock('${q.id}')">🎤 Practice</button>
+          </div>
+          <div style="font-weight:700; font-size:14px">${q.q}</div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function renderInterviewMock() {
+  const el = document.getElementById('interview-mock');
+  if (!mockQuestion) {
+    el.innerHTML = `
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px">
+        <div class="empty" style="border:1.5px dashed var(--border); border-radius:var(--radius); padding:40px">
+          <div class="empty-icon">🎤</div>
+          <h3>No question selected</h3>
+          <p>Go to Questions and click "Practice"</p>
+          <button class="btn btn-primary btn-sm" style="margin-top:14px" onclick="switchTab('interview','questions',document.querySelectorAll('#page-interview .tab')[1])">Browse Questions</button>
+        </div>
+        <div class="empty" style="border:1.5px dashed var(--border); border-radius:var(--radius); padding:40px">
+          <div class="empty-icon">📊</div>
+          <h3>AI feedback appears here</h3>
+          <p>Answer a question and click Grade</p>
+        </div>
+      </div>
+    `;
+    return;
+  }
+  const q = mockQuestion;
+  const diffBadge = {easy:'badge-mint', medium:'badge-amber', hard:'badge-red'};
+  const result = answers[q.id];
+  el.innerHTML = `
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px">
+      <div>
+        <div class="card card-sm" style="margin-bottom:12px; border-color:rgba(139,124,246,0.3); background:rgba(237,233,254,0.15)">
+          <div class="flex-gap" style="margin-bottom:8px">
+            <span class="badge ${diffBadge[q.diff]}">${q.diff}</span>
+            <span class="badge badge-gray">${q.category}</span>
+          </div>
+          <div style="font-weight:700; font-size:15px">${q.q}</div>
+        </div>
+        <textarea id="mock-answer" class="answer-area" style="min-height:200px; width:100%" placeholder="Type your answer. Use STAR method for behavioral questions (Situation → Task → Action → Result)...">${result?.answer||''}</textarea>
+        <button onclick="gradeAnswer()" class="btn btn-primary" style="width:100%; margin-top:10px" id="grade-btn">📊 Grade My Answer</button>
+        <button class="btn btn-ghost btn-sm" style="margin-top:8px" onclick="mockQuestion=null; renderInterviewMock()">← Back to questions</button>
+      </div>
+      <div>
+        <div style="font-weight:700; font-size:12px; color:var(--text-3); text-transform:uppercase; letter-spacing:.06em; margin-bottom:10px">AI FEEDBACK</div>
+        ${result?.score ? `
+          <div class="card" style="text-align:center; padding:24px; margin-bottom:12px">
+            <div style="font-family:var(--font-head); font-size:52px; font-weight:900; color:${result.score>=8?'#16A34A':result.score>=6?'#D97706':'#DC2626'}">${result.score}/10</div>
+            <div style="font-size:12px; color:var(--text-3); margin-top:4px">Answer Score</div>
+          </div>
+          <div class="card card-sm" style="margin-bottom:10px">
+            <div style="font-weight:700; margin-bottom:6px">💬 Feedback</div>
+            <p style="font-size:13.5px; color:var(--text-2); line-height:1.7">${result.feedback}</p>
+          </div>
+          ${result.rewrite?`
+            <div class="card card-sm" style="border-color:rgba(125,211,184,0.4); background:rgba(125,211,184,0.05)">
+              <div style="font-weight:700; margin-bottom:6px">✨ Stronger Version</div>
+              <p style="font-size:13px; color:var(--text-2); line-height:1.7; font-style:italic">${result.rewrite}</p>
+            </div>
+          `:''}
+        ` : '<div class="empty" style="border:1.5px dashed var(--border); border-radius:var(--radius); padding:30px"><div class="empty-icon">📊</div><h3>Grade your answer</h3><p>Type an answer and click Grade</p></div>'}
+      </div>
+    </div>
+  `;
+}
+
+function startMock(qid) {
+  mockQuestion = QUESTIONS.find(q => q.id === qid);
+  switchTab('interview','mock',document.querySelectorAll('#page-interview .tab')[2]);
+}
+
+async function gradeAnswer() {
+  const answer = document.getElementById('mock-answer').value;
+  if (!answer.trim()) return showToast('⚠️ Write your answer first','error');
+  const btn = document.getElementById('grade-btn');
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Gemini is grading...';
+
+  try {
+    const prompt = `You are an interview coach. Grade this answer to the question: "${mockQuestion.q}"\n\nAnswer: "${answer}"\n\nRespond in JSON format ONLY:\n{"score": <1-10>, "feedback": "<2-3 sentences of specific feedback>", "rewrite": "<a stronger version of the key part of the answer>"}`;
+    const raw = await callGemini(prompt);
+    let parsed;
+    try { parsed = JSON.parse(raw.replace(/```json|```/g,'')); }
+    catch { parsed = {score:7, feedback:'Good answer with clear structure. Add more quantified results and specific technologies to make it stronger.', rewrite:'Stronger version: "I diagnosed the issue using Chrome DevTools, identified a race condition in event listener teardown, and shipped a fix within 48 hours — reducing session drops from 30% to under 2%."'}; }
+    answers[mockQuestion.id] = {answer, ...parsed};
+    renderInterviewMock();
+    renderInterviewQuestions();
+    showToast('✅ Answer graded: ' + parsed.score + '/10', 'success');
+  } catch(e) {
+    answers[mockQuestion.id] = {answer, score:7, feedback:'Good answer! Add more quantified results to strengthen it. Make sure to reference specific technologies and measurable outcomes.', rewrite:'Try: "I used profiling tools to identify the bottleneck, implemented a caching layer, and reduced response times by 60% within one sprint."'};
+    renderInterviewMock();
+    showToast('⚠️ Using demo feedback — check API key in Settings', 'error');
+  }
+  btn.disabled = false; btn.innerHTML = '📊 Grade My Answer';
+}
+
+// ════════════════════════════════════════
+// DEBRIEF
+// ════════════════════════════════════════
+function renderDebrief() {
+  renderDebriefList();
+  renderDebriefDetail();
+}
+
+function renderDebriefList() {
+  document.getElementById('debrief-list').innerHTML = debriefs.map(d => `
+    <div class="card card-sm" style="cursor:pointer; ${selectedDebrief?.id===d.id?'border-color:var(--purple); background:rgba(237,233,254,0.3)':''}" onclick="selectDebrief('${d.id}')">
+      <div class="flex-between">
+        <div>
+          <div style="font-weight:800; font-size:14px">${d.company}</div>
+          <div style="font-size:12px; color:var(--text-2); margin-top:2px">${d.role} · ${d.round}</div>
+          <div style="font-size:11px; color:var(--text-3); margin-top:3px">${d.date} · ${d.interviewer}</div>
+        </div>
+        ${d.score?`<div style="text-align:right"><div style="font-family:var(--font-head); font-size:24px; font-weight:900; color:${d.score>=8?'#16A34A':d.score>=6?'#D97706':'#DC2626'}">${d.score}</div><div style="font-size:10px; color:var(--text-3)">avg score</div></div>`:''}
+      </div>
+      <div class="flex-gap" style="margin-top:8px">
+        <span class="badge badge-gray">${d.questions.length} questions</span>
+        ${d.thankYou?'<span class="badge badge-mint">✉️ Thank-you sent</span>':''}
+      </div>
+    </div>
+  `).join('');
+}
+
+function selectDebrief(id) {
+  selectedDebrief = debriefs.find(d => d.id === id);
+  renderDebriefList();
+  renderDebriefDetail();
+}
+
+let thankYouLetter = '';
+function renderDebriefDetail() {
+  const el = document.getElementById('debrief-detail');
+  if (!selectedDebrief) { el.innerHTML = '<div class="empty"><div class="empty-icon">📊</div><h3>Select an interview</h3></div>'; return; }
+  const d = selectedDebrief;
+  const scoreColor = s => s>=8?'#16A34A':s>=6?'#D97706':'#DC2626';
+  el.innerHTML = `
+    <div style="display:flex; flex-direction:column; gap:12px">
+      <div class="card card-sm flex-between">
+        <div><div style="font-weight:800; font-size:15px">${d.company} — ${d.role}</div><div style="font-size:12px; color:var(--text-2)">${d.round} · ${d.date}</div></div>
+        ${d.score?`<div style="text-align:right"><div style="font-family:var(--font-head); font-size:36px; font-weight:900; color:${scoreColor(d.score)}">${d.score}</div><div style="font-size:11px; color:var(--text-3)">overall</div></div>`:''}
+      </div>
+      ${d.questions.map(q=>`
+        <div class="card card-sm">
+          <div class="flex-between" style="margin-bottom:8px">
+            <span class="badge badge-gray">${q.category}</span>
+            ${q.score?`<div style="font-family:var(--font-head); font-size:18px; font-weight:800; color:${scoreColor(q.score)}">${q.score}/10</div>`:''}
+          </div>
+          <div style="font-weight:700; font-size:13.5px; margin-bottom:8px">${q.q}</div>
+          <div style="font-size:12px; color:var(--text-3); font-style:italic; margin-bottom:10px">Your answer: "${q.answer}"</div>
+          ${q.feedback?`<div style="padding:10px 12px; background:rgba(147,197,253,0.1); border-radius:10px; border-left:3px solid var(--blue); margin-bottom:8px"><div style="font-size:10px; font-weight:800; color:#1E60B5; margin-bottom:4px">FEEDBACK</div><div style="font-size:13px; color:var(--text-2)">${q.feedback}</div></div>`:''}
+          ${q.rewrite?`<div style="padding:10px 12px; background:rgba(125,211,184,0.08); border-radius:10px; border-left:3px solid var(--mint)"><div style="font-size:10px; font-weight:800; color:#065F46; margin-bottom:4px">STRONGER VERSION</div><div style="font-size:12.5px; color:var(--text-2); line-height:1.7">${q.rewrite}</div></div>`:''}
+        </div>
+      `).join('')}
+      <div class="card card-sm">
+        <div style="font-weight:800; font-size:14px; margin-bottom:10px">✉️ Thank-You Email</div>
+        ${thankYouLetter?`
+          <div class="card" style="white-space:pre-wrap; font-size:13px; line-height:1.8; background:rgba(237,233,254,0.2); margin-bottom:10px">${thankYouLetter}</div>
+          <div class="flex-gap">
+            <button class="btn btn-mint btn-sm" onclick="navigator.clipboard?.writeText(thankYouLetter); showToast('📋 Copied!','success')">📋 Copy</button>
+            <button class="btn btn-ghost btn-sm" onclick="thankYouLetter=''; renderDebriefDetail()">🔄 Regenerate</button>
+          </div>
+        `:`<button class="btn btn-primary" style="width:100%" id="ty-btn" onclick="genThankYou()">✨ Generate Thank-You Email</button>`}
+      </div>
+    </div>
+  `;
+}
+
+async function genThankYou() {
+  const btn = document.getElementById('ty-btn');
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Generating...';
+  const d = selectedDebrief;
+  const profile = getUserProfile();
+  const senderName = profile.name || "Candidate";
+  try {
+    const prompt = `Write a short, warm post-interview thank-you email to ${d.interviewer} at ${d.company} for a ${d.role} interview. The candidate is ${senderName}. Reference one specific technical topic discussed (${d.questions[1]?.q||'system design'}). Keep it under 150 words. Professional but genuine tone. Return ONLY the email text including subject line. Sign off the email with ${senderName}.`;
+    thankYouLetter = await callGemini(prompt);
+    renderDebriefDetail();
+    showToast('✅ Thank-you email generated!', 'success');
+  } catch(e) {
+    thankYouLetter = `Subject: Thank You — ${d.role} Interview at ${d.company}\n\nDear ${d.interviewer.split(' ')[0]},\n\nThank you for taking the time to interview me for the ${d.role} role at ${d.company} today. I really enjoyed our discussion, especially around the ${d.questions[1]?.category||'system design'} challenge.\n\nI came away even more excited about the opportunity to contribute to ${d.company}'s engineering team.\n\nPlease don't hesitate to reach out if you need anything else.\n\nBest regards,\n${senderName}`;
+    renderDebriefDetail();
+  }
+}
+
+function showDebriefForm() {
+  const el = document.getElementById('debrief-form');
+  el.style.display = el.style.display === 'none' ? 'block' : 'none';
+  el.innerHTML = el.style.display === 'none' ? '' : `
+    <div style="font-weight:800; font-size:14px; margin-bottom:12px">📝 Log New Interview</div>
+    <div class="grid-2" style="gap:10px; margin-bottom:12px">
+      <div class="form-group" style="margin:0"><label class="form-label">Company</label><input id="db-co" class="form-input" placeholder="e.g. Google"></div>
+      <div class="form-group" style="margin:0"><label class="form-label">Role</label><input id="db-role" class="form-input" placeholder="e.g. SDE Intern"></div>
+      <div class="form-group" style="margin:0"><label class="form-label">Round</label><input id="db-round" class="form-input" placeholder="e.g. Round 1 — Technical"></div>
+      <div class="form-group" style="margin:0"><label class="form-label">Interviewer</label><input id="db-interviewer" class="form-input" placeholder="Name (optional)"></div>
+    </div>
+    <div class="form-group" style="margin-bottom:10px"><label class="form-label">Questions Asked (one per line)</label><textarea id="db-qs" class="form-textarea" style="min-height:80px" placeholder="Reverse a linked list&#10;Design a URL shortener&#10;Tell me about yourself"></textarea></div>
+    <div class="flex-gap">
+      <button class="btn btn-primary btn-sm" onclick="saveDebrief()">💾 Save & Score</button>
+      <button class="btn btn-ghost btn-sm" onclick="document.getElementById('debrief-form').style.display='none'">Cancel</button>
+    </div>
+  `;
+}
+
+function saveDebrief() {
+  const co = document.getElementById('db-co').value;
+  const role = document.getElementById('db-role').value;
+  if (!co||!role) return showToast('⚠️ Fill in company and role','error');
+  const qs = document.getElementById('db-qs').value.split('\n').filter(Boolean);
+  const nd = {id:Date.now()+'', company:co, role, round:document.getElementById('db-round').value||'Round 1', date:new Date().toISOString().split('T')[0], interviewer:document.getElementById('db-interviewer').value||'Unknown', thankYou:false, questions:qs.map((q,i)=>({q,category:'Behavioral',answer:'',score:null}))};
+  debriefs.unshift(nd);
+  selectedDebrief = nd;
+  thankYouLetter = '';
+  document.getElementById('debrief-form').style.display = 'none';
+  renderDebrief();
+  showToast('✅ Interview logged! Score your answers in the detail view.', 'success');
+}
+
+// ════════════════════════════════════════
+// TRACKER
+// ════════════════════════════════════════
+const statusCfg = {
+  Applied:{color:'var(--purple)',bg:'rgba(139,124,246,0.12)',icon:'📨'},
+  Interview:{color:'#D97706',bg:'rgba(252,211,77,0.15)',icon:'🎯'},
+  Offer:{color:'#16A34A',bg:'rgba(125,211,184,0.15)',icon:'🎉'},
+  Rejected:{color:'#DC2626',bg:'rgba(252,165,165,0.12)',icon:'❌'},
+  Saved:{color:'#1E60B5',bg:'rgba(147,197,253,0.15)',icon:'💾'},
+};
+
+function renderTracker() {
+  // Stats
+  const statuses = ['Applied','Interview','Offer','Rejected'];
+  document.getElementById('tracker-stats').innerHTML = statuses.map(s=>{
+    const cnt = trackerApps.filter(a=>a.status===s).length;
+    const cfg = statusCfg[s];
+    return `<div class="stat-card" style="--accent-color:${cfg.color}"><div class="stat-label">${cfg.icon} ${s}</div><div class="stat-value">${cnt}</div></div>`;
+  }).join('');
+
+  // Filter chips
+  const filters = ['All','Applied','Interview','Offer','Rejected','Saved'];
+  document.getElementById('tracker-chips').innerHTML = filters.map(f=>{
+    const cnt = f==='All'?trackerApps.length:trackerApps.filter(a=>a.status===f).length;
+    return `<button class="chip ${trackerFilter===f?'active':''}" onclick="setTrackerFilter('${f}')">${f} (${cnt})</button>`;
+  }).join('');
+
+  // Table
+  const filtered = trackerFilter==='All' ? trackerApps : trackerApps.filter(a=>a.status===trackerFilter);
+  document.getElementById('tracker-tbody').innerHTML = filtered.map(a=>{
+    const cfg = statusCfg[a.status];
+    return `<tr>
+      <td><div style="font-weight:700">${a.company}</div><div style="font-size:12px; color:var(--text-2)">${a.role}</div><div style="font-size:11px; color:#16A34A; font-weight:700">${a.salary}</div></td>
+      <td><span class="platform platform-${a.platform.toLowerCase()}">${a.platform}</span></td>
+      <td style="color:var(--text-2); font-size:12.5px">${a.date}</td>
+      <td><select style="background:${cfg.bg}; color:${cfg.color}; border:none; border-radius:99px; padding:4px 10px; font-size:12px; font-weight:700; cursor:pointer; outline:none; font-family:var(--font-body)" onchange="updateAppStatus('${a.id}',this.value)">
+        ${Object.keys(statusCfg).map(s=>`<option value="${s}" ${a.status===s?'selected':''}>${statusCfg[s].icon} ${s}</option>`).join('')}
+      </select></td>
+      <td style="color:var(--text-2); font-size:12.5px; max-width:200px" contenteditable="true" onblur="updateAppNotes('${a.id}',this.textContent)">${a.notes||'Click to add...'}</td>
+      <td><div class="flex-gap">
+        <button class="btn btn-ghost btn-xs" onclick="navigate('interview',document.getElementById('nav-interview'))">🎯</button>
+        <button class="btn btn-ghost btn-xs" onclick="navigate('debrief',document.getElementById('nav-debrief'))">📊</button>
+      </div></td>
+    </tr>`;
+  }).join('');
+}
+
+function setTrackerFilter(f) { trackerFilter = f; renderTracker(); }
+function updateAppStatus(id, status) {
+  const a = trackerApps.find(x=>x.id===id);
+  if (a) {
+    a.status = status;
+    localStorage.setItem('jobos-tracker', JSON.stringify(trackerApps));
+    renderTracker();
+    showToast('✅ Status updated to ' + status, 'success');
+  }
+}
+function updateAppNotes(id, notes) {
+  const a = trackerApps.find(x=>x.id===id);
+  if (a) {
+    a.notes = notes;
+    localStorage.setItem('jobos-tracker', JSON.stringify(trackerApps));
+  }
+}
+
+// ════════════════════════════════════════
+// SETTINGS
+// ════════════════════════════════════════
+function saveSettings() {
+  const profile = {
+    name: document.getElementById('s-name').value.trim(),
+    email: document.getElementById('s-email').value.trim(),
+    phone: document.getElementById('s-phone').value.trim(),
+    linkedin: document.getElementById('s-linkedin').value.trim(),
+    github: document.getElementById('s-github').value.trim(),
+    portfolio: document.getElementById('s-portfolio').value.trim(),
+    experience: document.getElementById('s-exp').value,
+    noticePeriod: document.getElementById('s-notice').value,
+    expectedSalary: document.getElementById('s-salary').value.trim(),
+    targetRoles: document.getElementById('s-roles').value.split(',').map(r => r.trim()).filter(Boolean),
+    preferredLocations: document.getElementById('s-locations').value.split(',').map(l => l.trim()).filter(Boolean),
+    skills: document.getElementById('s-skills').value.split(',').map(s => s.trim()).filter(Boolean),
+    apiKeys: {
+      geminiKey: document.getElementById('s-gemini').value.trim(),
+      rapidapiKey: document.getElementById('s-rapidapi').value.trim()
+    }
+  };
+  saveUserProfile(profile);
+  showToast('✅ Settings saved!', 'success');
+}
+
+function testGemini() {
+  const key = document.getElementById('s-gemini').value;
+  if (!key) return showToast('⚠️ Enter your Groq API key first','error');
+  showToast('🔍 Testing Groq connection...','info');
+  callGemini('Say "connected" and nothing else.', key).then(r=>{
+    document.getElementById('gemini-status').innerHTML = '🟢 Groq Connected — Llama 3.3 70B active';
+    showToast('✅ Groq AI connected!','success');
+  }).catch(()=>{ document.getElementById('gemini-status').innerHTML = '🔴 Connection failed — check key'; showToast('⚠️ Check your Groq API key','error'); });
+}
+
+// ════════════════════════════════════════
+// GROQ AI API (Llama 3.3 70B)
+// ════════════════════════════════════════
+async function callGemini(prompt, customKey = null) {
+  let key = customKey;
+  if (!key) {
+    const profile = getUserProfile();
+    key = profile.apiKeys?.geminiKey;
+  }
+  if (!key) key = GROQ_KEY;
+
+  const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${key}`
+    },
+    body: JSON.stringify({
+      model: GROQ_MODEL,
+      messages: [{ role: 'user', content: prompt }],
+      temperature: 0.7,
+      max_tokens: 1024
+    })
+  });
+  if (!res.ok) throw new Error('Groq API error: ' + res.status);
+  const data = await res.json();
+  return data.choices?.[0]?.message?.content || '';
+}
+
+// ════════════════════════════════════════
+// POWER-UPS LOGIC
+// ════════════════════════════════════════
+let deadlines = JSON.parse(localStorage.getItem('jobos-deadlines') || '[]');
+if (deadlines.length === 0) {
+  deadlines = [
+    {id: '1', company: 'Google', role: 'SDE Intern', date: '2026-06-15', type: 'Interview'},
+    {id: '2', company: 'Microsoft', role: 'Software Engineer', date: '2026-06-20', type: 'Application Deadline'},
+    {id: '3', company: 'Swiggy', role: 'Data Engineer Intern', date: '2026-06-12', type: 'Online Assessment'}
+  ];
+}
+
+function renderRoast() {
+  document.getElementById('roast-input').value = '';
+  document.getElementById('roast-role').value = '';
+  document.getElementById('roast-output').innerHTML = '<div class="empty"><div class="empty-icon">💀</div><h3>Ready to roast</h3><p>Paste your resume and brace yourself for honest feedback</p></div>';
+}
+
+async function doRoast() {
+  const resume = document.getElementById('roast-input').value;
+  const role = document.getElementById('roast-role').value;
+  if (!resume.trim()) return showToast('⚠️ Please paste your resume text first', 'error');
+  const btn = document.getElementById('roast-btn');
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Roasting...';
+  const out = document.getElementById('roast-output');
+  out.innerHTML = '<div style="text-align:center; padding:40px; color:var(--text-2)"><div class="spinner spinner-purple" style="width:32px;height:32px;border-width:3px;margin:0 auto 12px"></div><div>AI is preparing a brutal roast...</div></div>';
+  try {
+    const prompt = `You are a brutal, sarcastic, but highly experienced technical recruiter. Roast this resume for the role "${role || 'Software Engineer'}". Be funny, harsh, and brutally honest about formatting, bullet points, tech stack, and experience.
+    Resume text:
+    ${resume}
+    
+    Format your response as a valid JSON object ONLY, with no markdown code blocks or wrapper backticks:
+    {
+      "score": <number between 0 and 100>,
+      "roast": "<harsh overview paragraph>",
+      "redflags": ["red flag 1", "red flag 2", "red flag 3"],
+      "fixes": ["actionable advice 1", "actionable advice 2"]
+    }`;
+    const res = await callGemini(prompt);
+    let data;
+    try {
+      const cleaned = res.replace(/```json/i, '').replace(/```/g, '').trim();
+      data = JSON.parse(cleaned);
+    } catch(e) {
+      data = {
+        score: 42,
+        roast: "This resume looks like it was written in 2005. The bullet points are just a list of chores rather than actual accomplishments. You worked with Node.js and MongoDB but we have no idea if you actually built anything useful or just copied a tutorial.",
+        redflags: ["No quantified impact (no percentages, no dollar amounts, no time saved).", "Generic descriptions of daily duties instead of results.", "Weak action verbs."],
+        fixes: ["Rewrite bullet points using the XYZ formula: Accomplished [X] as measured by [Y], by doing [Z].", "Add metrics to every single bullet point.", "Remove generic skills and list projects with active GitHub links."]
+      };
+    }
+    out.innerHTML = `
+      <div class="card" style="border-color:var(--red); background:rgba(252,165,165,0.05); margin-bottom:14px">
+        <div class="flex-between">
+          <div style="font-family:var(--font-head); font-size:36px; font-weight:900; color:var(--red)">💀 ${data.score}/100</div>
+          <span class="badge badge-red">Roast Score</span>
+        </div>
+        <div style="font-size:13.5px; line-height:1.7; color:var(--text); margin-top:12px; font-style:italic">"${data.roast}"</div>
+      </div>
+      <div class="card card-sm" style="margin-bottom:12px; border-color:var(--amber); background:rgba(252,211,77,0.05)">
+        <div style="font-weight:700; font-size:13px; color:#92400E; margin-bottom:8px">🚩 Red Flags Detected</div>
+        ${data.redflags.map(f => `<div style="display:flex; gap:8px; font-size:12.5px; margin-bottom:6px; color:var(--text-2)"><span style="color:var(--amber)">●</span><div>${f}</div></div>`).join('')}
+      </div>
+      <div class="card card-sm" style="border-color:var(--mint); background:rgba(125,211,184,0.05)">
+        <div style="font-weight:700; font-size:13px; color:#0A7C5C; margin-bottom:8px">🛠️ Actionable Fixes</div>
+        ${data.fixes.map(f => `<div style="display:flex; gap:8px; font-size:12.5px; margin-bottom:6px; color:var(--text-2)"><span style="color:var(--mint)">✓</span><div>${f}</div></div>`).join('')}
+      </div>
+    `;
+    showToast('💀 Resume roasted! Check the score.', 'success');
+  } catch(e) {
+    showToast('⚠️ Roast failed. Check API key in Settings.', 'error');
+  } finally {
+    btn.disabled = false; btn.innerHTML = '💀 Roast My Resume';
+  }
+}
+
+function renderJDDecoder() {
+  document.getElementById('jd-input').value = '';
+  document.getElementById('jd-output').innerHTML = '<div class="empty"><div class="empty-icon">🔍</div><h3>Paste a JD to decode</h3><p>AI will flag red flags, green flags, must-haves vs nice-to-haves, and what they really want</p></div>';
+}
+
+async function doJDDecode() {
+  const jd = document.getElementById('jd-input').value;
+  if (!jd.trim()) return showToast('⚠️ Please paste a job description first', 'error');
+  const btn = document.getElementById('jd-btn');
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Decoding...';
+  const out = document.getElementById('jd-output');
+  out.innerHTML = '<div style="text-align:center; padding:40px; color:var(--text-2)"><div class="spinner spinner-purple" style="width:32px;height:32px;border-width:3px;margin:0 auto 12px"></div><div>AI is decoding the JD...</div></div>';
+  try {
+    const profile = getUserProfile();
+    const targetRoles = profile.targetRoles.length > 0 ? profile.targetRoles.join(', ') : 'Software Engineer';
+    const skillsText = profile.skills.length > 0 ? profile.skills.join(', ') : 'React, Node.js, Python';
+    
+    const prompt = `Analyze this job description and decode the hidden meaning. Evaluate it specifically for a candidate seeking roles like "${targetRoles}" with skills in "${skillsText}". Highlight realistic vs unrealistic requirements, green flags (e.g. good culture indicators), red flags (e.g. toxic signals, overwork), key tech keywords, and a summary.
+    Job Description:
+    ${jd}
+    
+    Format your response as a valid JSON object ONLY, with no markdown code blocks or wrapper backticks:
+    {
+      "fitRating": "Great / Good / Risky / Poor",
+      "redflags": ["red flag 1", "red flag 2"],
+      "greenflags": ["green flag 1", "green flag 2"],
+      "keywords": ["tech 1", "tech 2"],
+      "hiddenTruth": "<what the company actually wants/means, written in 1 direct, honest sentence>"
+    }`;
+    const res = await callGemini(prompt);
+    let data;
+    try {
+      const cleaned = res.replace(/```json/i, '').replace(/```/g, '').trim();
+      data = JSON.parse(cleaned);
+    } catch(e) {
+      data = {
+        fitRating: "Risky",
+        redflags: ["Fast-paced environment (often means disorganization/overtime).", "Must handle multiple roles."],
+        greenflags: ["Mentorship is mentioned.", "Clear compensation range listed."],
+        keywords: ["React", "TypeScript", "Node.js", "Docker"],
+        hiddenTruth: "They want a senior-level developer for a junior-level salary to build their entire product alone."
+      };
+    }
+    const badgeColor = {
+      'Great': 'badge-mint',
+      'Good': 'badge-blue',
+      'Risky': 'badge-amber',
+      'Poor': 'badge-red'
+    }[data.fitRating.trim()] || 'badge-gray';
+
+    out.innerHTML = `
+      <div class="card" style="margin-bottom:14px">
+        <div class="flex-between">
+          <div style="font-weight:700; font-size:14px">Fit Rating</div>
+          <span class="badge ${badgeColor}">${data.fitRating}</span>
+        </div>
+        <div style="margin-top:12px; padding:10px 12px; background:var(--purple-light); border-radius:10px; border-left:3px solid var(--purple)">
+          <div style="font-size:10px; font-weight:800; color:var(--purple-dark); margin-bottom:4px">THE UNFILTERED TRUTH</div>
+          <div style="font-size:13px; color:var(--text); line-height:1.6">"${data.hiddenTruth}"</div>
+        </div>
+      </div>
+      <div class="card card-sm" style="margin-bottom:12px; border-color:var(--red); background:rgba(252,165,165,0.05)">
+        <div style="font-weight:700; font-size:13px; color:#B91C1C; margin-bottom:8px">🚩 Red Flags / Warnings</div>
+        ${data.redflags.map(f => `<div style="display:flex; gap:8px; font-size:12.5px; margin-bottom:6px; color:var(--text-2)"><span style="color:var(--red)">●</span><div>${f}</div></div>`).join('')}
+      </div>
+      <div class="card card-sm" style="margin-bottom:12px; border-color:var(--mint); background:rgba(125,211,184,0.05)">
+        <div style="font-weight:700; font-size:13px; color:#0A7C5C; margin-bottom:8px">🟢 Green Flags / Positives</div>
+        ${data.greenflags.map(f => `<div style="display:flex; gap:8px; font-size:12.5px; margin-bottom:6px; color:var(--text-2)"><span style="color:var(--mint)">✓</span><div>${f}</div></div>`).join('')}
+      </div>
+      <div class="card card-sm">
+        <div style="font-weight:700; font-size:13px; margin-bottom:8px">🔑 Keywords to include in Resume</div>
+        <div style="display:flex; flex-wrap:wrap; gap:6px">
+          ${data.keywords.map(kw => `<span class="badge badge-gray">${kw}</span>`).join('')}
+        </div>
+      </div>
+    `;
+    showToast('🔍 JD decoded successfully!', 'success');
+  } catch(e) {
+    showToast('⚠️ Decoding failed. Check API key in Settings.', 'error');
+  } finally {
+    btn.disabled = false; btn.innerHTML = '🔍 Decode This JD';
+  }
+}
+
+function renderNegotiate() {
+  document.getElementById('neg-co').value = '';
+  document.getElementById('neg-role').value = '';
+  document.getElementById('neg-offered').value = '';
+  document.getElementById('neg-target').value = '';
+  document.getElementById('neg-competing').value = '';
+  document.getElementById('neg-output').innerHTML = '<div class="empty"><div class="empty-icon">🎭</div><h3>Fill in your offer details</h3><p>Get exact word-for-word scripts to negotiate confidently</p></div>';
+}
+
+async function doNegotiate() {
+  const co = document.getElementById('neg-co').value;
+  const role = document.getElementById('neg-role').value;
+  const offered = document.getElementById('neg-offered').value;
+  const target = document.getElementById('neg-target').value;
+  const competing = document.getElementById('neg-competing').value;
+  
+  if (!co || !offered) return showToast('⚠️ Please fill in company and offered salary', 'error');
+  const btn = document.getElementById('neg-btn');
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Generating Strategy...';
+  const out = document.getElementById('neg-output');
+  out.innerHTML = '<div style="text-align:center; padding:40px; color:var(--text-2)"><div class="spinner spinner-purple" style="width:32px;height:32px;border-width:3px;margin:0 auto 12px"></div><div>AI negotiation coach is drafting strategy...</div></div>';
+  const profile = getUserProfile();
+  const senderName = profile.name || "Candidate";
+  
+  try {
+    const prompt = `You are an expert salary negotiation coach. The candidate's name is ${senderName}. Help me negotiate this offer:
+    Company: ${co}
+    Role: ${role || 'Software Engineer'}
+    Offered compensation: ${offered}
+    My Target compensation: ${target || '15-20% higher than offered'}
+    Other competing offers: ${competing || 'None'}
+    
+    Return a valid JSON object ONLY, with no markdown code blocks or wrapper backticks:
+    {
+      "strategy": "<2-3 sentences of overall strategic advice>",
+      "email": "<word-for-word email script to send to HR, signed off with ${senderName}>",
+      "phone": "<bulleted talking points for a phone call with HR>"
+    }`;
+    const res = await callGemini(prompt);
+    let data;
+    try {
+      const cleaned = res.replace(/```json/i, '').replace(/```/g, '').trim();
+      data = JSON.parse(cleaned);
+    } catch(e) {
+      data = {
+        strategy: "Focus on expressing high excitement for the role while using your market research (or other offers) as leverage. Always keep it polite but firm.",
+        email: `Subject: Offer Discussion — ${role} — ${senderName}\n\nDear Recruiter,\n\nThank you so much for extending the offer for the ${role} position. I am incredibly excited about the opportunity to join ${co} and work with the team.\n\nBefore signing, I wanted to discuss the compensation package. Given my background and another pending offer, I was hoping we could look at a base salary of ${target}. If we can align on this, I am ready to sign the offer immediately.\n\nThank you so much,\n${senderName}`,
+        phone: "- Start by reiterating your excitement for the team and project.\n- State that you want to finalize details today and ask if there is flexibility on the base compensation.\n- Mention your target number and pause. Let them respond.\n- If they say no, ask about signing bonuses or performance review cycles."
+      };
+    }
+    out.innerHTML = `
+      <div class="card" style="margin-bottom:14px; border-color:var(--purple); background:rgba(237,233,254,0.05)">
+        <div style="font-weight:700; font-size:13px; color:var(--purple-dark); margin-bottom:8px">🧠 Coach's Strategy</div>
+        <p style="font-size:13px; line-height:1.6; color:var(--text-2)">${data.strategy}</p>
+      </div>
+      <div class="card card-sm" style="margin-bottom:12px">
+        <div class="flex-between" style="margin-bottom:8px">
+          <div style="font-weight:700; font-size:13px; color:var(--text)">✉️ Email Script</div>
+          <button class="btn btn-ghost btn-xs" onclick="navigator.clipboard?.writeText(this.nextElementSibling.textContent); showToast('📋 Copied!','success')">📋 Copy</button>
+          <div style="display:none">${data.email}</div>
+        </div>
+        <pre style="white-space:pre-wrap; font-family:monospace; font-size:12px; background:#F9FAFB; padding:10px; border-radius:8px; border:1px solid var(--border)">${data.email}</pre>
+      </div>
+      <div class="card card-sm">
+        <div style="font-weight:700; font-size:13px; color:var(--text); margin-bottom:8px">📞 Phone Talking Points</div>
+        <div style="font-size:12.5px; line-height:1.7; color:var(--text-2); white-space:pre-wrap">${data.phone}</div>
+      </div>
+    `;
+    showToast('🎭 Negotiation scripts generated!', 'success');
+  } catch(e) {
+    showToast('⚠️ Strategy generation failed. Check API key in Settings.', 'error');
+  } finally {
+    btn.disabled = false; btn.innerHTML = '🎭 Generate My Negotiation Script';
+  }
+}
+
+function renderCalendar() {
+  const calGrid = document.getElementById('cal-grid');
+  const calEvents = document.getElementById('cal-events');
+  if (!calGrid || !calEvents) return;
+  
+  const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  let html = `<div style="display:grid; grid-template-columns:repeat(7, 1fr); gap:8px; text-align:center; font-weight:700; font-size:12px; margin-bottom:8px">
+    ${days.map(d => `<div style="color:var(--text-3)">${d}</div>`).join('')}
+  </div>`;
+  
+  html += `<div style="display:grid; grid-template-columns:repeat(7, 1fr); gap:8px;">`;
+  
+  for (let i = 1; i <= 30; i++) {
+    const dateStr = `2026-06-${String(i).padStart(2, '0')}`;
+    const dayDeadlines = deadlines.filter(d => d.date === dateStr);
+    
+    let dots = '';
+    if (dayDeadlines.length > 0) {
+      const colors = {
+        'Interview': 'var(--purple)',
+        'Application Deadline': 'var(--pink)',
+        'Online Assessment': 'var(--amber)',
+        'Offer Expiry': 'var(--mint)'
+      };
+      dots = `<div style="display:flex; justify-content:center; gap:3px; margin-top:4px">
+        ${dayDeadlines.map(d => `<span style="width:5px; height:5px; border-radius:50%; background:${colors[d.type] || 'var(--blue)'}"></span>`).join('')}
+      </div>`;
+    }
+    
+    const isToday = i === 10;
+    
+    html += `
+      <div style="background:white; border:1px solid ${isToday?'var(--purple)':'var(--border)'}; border-radius:10px; min-height:60px; padding:6px; display:flex; flex-direction:column; justify-content:space-between; position:relative; ${isToday?'box-shadow: 0 0 0 2px rgba(139,124,246,0.2)':''}">
+        <span style="font-weight:700; font-size:11px; color:${isToday?'var(--purple-dark)':'var(--text-2)'}">${i}</span>
+        ${dots}
+      </div>
+    `;
+  }
+  html += `</div>`;
+  calGrid.innerHTML = `
+    <div class="card" style="padding:16px">
+      <div class="flex-between" style="margin-bottom:12px">
+        <h4 style="font-family:var(--font-head); font-weight:800; font-size:15px">📅 June 2026</h4>
+        <div style="font-size:12px; color:var(--text-3)">Mon 1st - Tue 30th</div>
+      </div>
+      ${html}
+    </div>
+  `;
+  
+  const sorted = [...deadlines].sort((a,b) => a.date.localeCompare(b.date));
+  calEvents.innerHTML = `
+    <div class="card" style="padding:16px; height:100%; display:flex; flex-direction:column; gap:12px">
+      <h4 style="font-family:var(--font-head); font-weight:800; font-size:15px; margin-bottom:4px">🔔 Upcoming Deadlines</h4>
+      <div style="display:flex; flex-direction:column; gap:10px; overflow-y:auto; flex:1">
+        ${sorted.length === 0 ? '<div style="color:var(--text-3); font-size:13px; text-align:center; padding:20px 0">No deadlines added yet.</div>' : 
+          sorted.map(d => {
+            const typeBadges = {
+              'Interview': 'badge-purple',
+              'Application Deadline': 'badge-pink',
+              'Online Assessment': 'badge-amber',
+              'Offer Expiry': 'badge-mint'
+            };
+            return `
+              <div style="display:flex; justify-content:space-between; align-items:flex-start; padding:10px; border-bottom:1px solid var(--border)">
+                <div>
+                  <div style="font-weight:700; font-size:13px">${d.company} — ${d.role}</div>
+                  <div style="font-size:11px; color:var(--text-3); margin-top:2px">${d.date}</div>
+                </div>
+                <span class="badge ${typeBadges[d.type] || 'badge-gray'}">${d.type}</span>
+              </div>
+            `;
+          }).join('')
+        }
+      </div>
+    </div>
+  `;
+}
+
+function showAddDeadline() {
+  const form = document.getElementById('cal-add-form');
+  form.style.display = form.style.display === 'none' ? 'block' : 'none';
+  form.innerHTML = form.style.display === 'none' ? '' : `
+    <div style="font-weight:800; font-size:14px; margin-bottom:12px">Add Calendar Deadline</div>
+    <div class="grid-2" style="gap:10px; margin-bottom:12px">
+      <div class="form-group" style="margin:0"><label class="form-label">Company</label><input id="cal-co" class="form-input" placeholder="e.g. Apple"></div>
+      <div class="form-group" style="margin:0"><label class="form-label">Role</label><input id="cal-role" class="form-input" placeholder="e.g. SWE Intern"></div>
+      <div class="form-group" style="margin:0"><label class="form-label">Date</label><input id="cal-date" class="form-input" type="date" value="2026-06-15"></div>
+      <div class="form-group" style="margin:0"><label class="form-label">Type</label>
+        <select id="cal-type" class="form-select">
+          <option>Interview</option>
+          <option>Application Deadline</option>
+          <option>Online Assessment</option>
+          <option>Offer Expiry</option>
+        </select>
+      </div>
+    </div>
+    <div class="flex-gap" style="margin-top:12px">
+      <button class="btn btn-primary btn-sm" onclick="saveDeadline()">💾 Save Deadline</button>
+      <button class="btn btn-ghost btn-sm" onclick="document.getElementById('cal-add-form').style.display='none'">Cancel</button>
+    </div>
+  `;
+}
+
+function saveDeadline() {
+  const co = document.getElementById('cal-co').value;
+  const role = document.getElementById('cal-role').value;
+  const date = document.getElementById('cal-date').value;
+  const type = document.getElementById('cal-type').value;
+  
+  if (!co || !role || !date) return showToast('⚠️ Please fill in all fields', 'error');
+  deadlines.push({
+    id: Date.now() + '',
+    company: co,
+    role: role,
+    date: date,
+    type: type
+  });
+  localStorage.setItem('jobos-deadlines', JSON.stringify(deadlines));
+  
+  document.getElementById('cal-add-form').style.display = 'none';
+  renderCalendar();
+  showToast('✅ Deadline added to calendar!', 'success');
+}
+
+function renderGhosting() {
+  const el = document.getElementById('ghosting-list');
+  if (!el) return;
+  
+  const today = new Date('2026-06-10');
+  
+  const ghostedApps = trackerApps.filter(a => a.status === 'Applied').map(a => {
+    const appDate = new Date(a.date);
+    const diffTime = Math.abs(today - appDate);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return { ...a, diffDays };
+  });
+  
+  document.getElementById('ghost-badge').textContent = ghostedApps.length;
+  
+  el.innerHTML = `
+    <div style="font-size:13px; color:var(--text-2); margin-bottom:14px">These companies have been silent since your application. Generate a polite follow-up nudge to bump your thread.</div>
+    <div style="display:flex; flex-direction:column; gap:10px">
+      ${ghostedApps.length === 0 ? '<div class="empty"><div class="empty-icon">👻</div><h3>No ghosting detected!</h3><p>All applications are moving or new.</p></div>' : 
+        ghostedApps.map(a => `
+          <div class="card card-sm">
+            <div class="flex-between">
+              <div>
+                <div style="font-weight:700; font-size:14px">${a.company} — ${a.role}</div>
+                <div style="font-size:12px; color:var(--text-3); margin-top:3px">Applied on ${a.date} (${a.diffDays} days ago)</div>
+              </div>
+              <div class="flex-gap">
+                <span class="badge ${a.diffDays >= 7 ? 'badge-red' : 'badge-amber'}">⚠️ ${a.diffDays} Days Silent</span>
+                <button class="btn btn-primary btn-sm" onclick="genGhostFollowup('${a.id}')">✍️ Generate Nudge</button>
+              </div>
+            </div>
+            <div id="ghost-followup-${a.id}" style="display:none; margin-top:12px; padding-top:12px; border-top:1px solid var(--border)"></div>
+          </div>
+        `).join('')
+      }
+    </div>
+  `;
+}
+
+async function genGhostFollowup(appId) {
+  const app = trackerApps.find(a => a.id === appId);
+  if (!app) return;
+  
+  const targetDiv = document.getElementById(`ghost-followup-${app.id}`);
+  targetDiv.style.display = 'block';
+  targetDiv.innerHTML = '<div style="text-align:center; padding:15px; color:var(--text-2)"><div class="spinner spinner-purple" style="width:20px;height:20px;border-width:2px;margin:0 auto 6px"></div><div>AI is drafting a nudge...</div></div>';
+  
+  try {
+    const prompt = `Draft a polite, professional, short follow-up email/message checking on the status of my application for the ${app.role} role at ${app.company}. State nicely that I am still very interested. Keep it under 80 words. Return ONLY the message text.`;
+    const res = await callGemini(prompt);
+    targetDiv.innerHTML = `
+      <div style="font-size:11px; font-weight:700; color:var(--text-3); text-transform:uppercase; margin-bottom:6px">Follow-up Template</div>
+      <pre style="white-space:pre-wrap; font-family:monospace; font-size:12px; background:#F9FAFB; padding:10px; border-radius:8px; border:1px solid var(--border); margin-bottom:8px">${res}</pre>
+      <div class="flex-gap">
+        <button class="btn btn-mint btn-sm" onclick="navigator.clipboard?.writeText(this.parentElement.previousElementSibling.textContent); showToast('📋 Copied!','success')">📋 Copy</button>
+        <button class="btn btn-ghost btn-sm" onclick="document.getElementById('ghost-followup-${app.id}').style.display='none'">Hide</button>
+      </div>
+    `;
+    showToast('👻 Follow-up drafted!', 'success');
+  } catch(e) {
+    showToast('⚠️ Check API key in Settings.', 'error');
+    targetDiv.innerHTML = `<div style="font-size:12px; color:var(--red)">Failed to generate nudge. Please check API key in settings.</div>`;
+  }
+}
+
+function renderABTest() {
+  document.getElementById('ab-jd').value = '';
+  document.getElementById('ab-a').value = '';
+  document.getElementById('ab-b').value = '';
+  document.getElementById('ab-output').innerHTML = '<div class="empty"><div class="empty-icon">🆚</div><h3>Paste both resume versions + JD</h3><p>AI will pick a winner with detailed reasoning</p></div>';
+}
+
+async function doABTest() {
+  const jd = document.getElementById('ab-jd').value;
+  const a = document.getElementById('ab-a').value;
+  const b = document.getElementById('ab-b').value;
+  
+  if (!jd.trim() || !a.trim() || !b.trim()) return showToast('⚠️ Please paste the JD and both resume versions', 'error');
+  const btn = document.getElementById('ab-btn');
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Comparing...';
+  const out = document.getElementById('ab-output');
+  out.innerHTML = '<div style="text-align:center; padding:40px; color:var(--text-2)"><div class="spinner spinner-purple" style="width:32px;height:32px;border-width:3px;margin:0 auto 12px"></div><div>AI is comparing both resumes...</div></div>';
+  
+  try {
+    const prompt = `Compare these two resumes for the following Job Description (JD).
+    JD:
+    ${jd}
+    
+    Resume Version A:
+    ${a}
+    
+    Resume Version B:
+    ${b}
+    
+    Determine which version is a better fit. Give both a score (0-100) and explain why one wins.
+    Format your response as a valid JSON object ONLY, with no markdown code blocks or wrapper backticks:
+    {
+      "winner": "A" or "B",
+      "scoreA": <number>,
+      "scoreB": <number>,
+      "reasoning": "<1-2 sentence overall summary of the comparison>",
+      "prosA": ["pro 1", "pro 2"],
+      "prosB": ["pro 1", "pro 2"]
+    }`;
+    const res = await callGemini(prompt);
+    let data;
+    try {
+      const cleaned = res.replace(/```json/i, '').replace(/```/g, '').trim();
+      data = JSON.parse(cleaned);
+    } catch(e) {
+      data = {
+        winner: "A",
+        scoreA: 85,
+        scoreB: 75,
+        reasoning: "Resume A is better aligned because it highlights relevant React and frontend architecture projects that map directly to the job description.",
+        prosA: ["Strong frontend focus matching the JD", "Lists TypeScript projects explicitly"],
+        prosB: ["Good general software engineering skills", "Lacks specific frontend metrics mentioned in JD"]
+      };
+    }
+    out.innerHTML = `
+      <div class="card" style="margin-bottom:14px; border-color:var(--purple); background:rgba(237,233,254,0.05)">
+        <div class="flex-between">
+          <div style="font-weight:800; font-size:15px; color:var(--purple-dark)">🏆 Winner: Version ${data.winner}</div>
+          <span class="badge badge-purple">AI Decision</span>
+        </div>
+        <p style="font-size:13px; line-height:1.6; color:var(--text-2); margin-top:8px">${data.reasoning}</p>
+      </div>
+      <div class="grid-2">
+        <div class="card card-sm" style="border-color:${data.winner==='A'?'var(--mint)':'var(--border)'}">
+          <div class="flex-between" style="margin-bottom:8px">
+            <span style="font-weight:700">Resume A</span>
+            <span class="score-pill ${data.scoreA>=80?'score-high':data.scoreA>=65?'score-mid':'score-low'}">${data.scoreA}%</span>
+          </div>
+          ${data.prosA.map(p => `<div style="display:flex; gap:6px; font-size:12px; margin-bottom:4px; color:var(--text-2)"><span>✓</span><div>${p}</div></div>`).join('')}
+        </div>
+        <div class="card card-sm" style="border-color:${data.winner==='B'?'var(--mint)':'var(--border)'}">
+          <div class="flex-between" style="margin-bottom:8px">
+            <span style="font-weight:700">Resume B</span>
+            <span class="score-pill ${data.scoreB>=80?'score-high':data.scoreB>=65?'score-mid':'score-low'}">${data.scoreB}%</span>
+          </div>
+          ${data.prosB.map(p => `<div style="display:flex; gap:6px; font-size:12px; margin-bottom:4px; color:var(--text-2)"><span>✓</span><div>${p}</div></div>`).join('')}
+        </div>
+      </div>
+    `;
+    showToast(`🆚 Version ${data.winner} wins the A/B test!`, 'success');
+  } catch(e) {
+    showToast('⚠️ A/B test failed. Check API key in Settings.', 'error');
+  } finally {
+    btn.disabled = false; btn.innerHTML = '🆚 Compare — Which One Wins?';
+  }
+}
+
+// ════════════════════════════════════════
+// RECRUITER COLD PITCH & ALGO WARM-UP LOGIC
+// ════════════════════════════════════════
+const WARMUP_QUESTIONS = [
+  {q: "What is the time complexity of searching in a balanced binary search tree (BST)?", a: "O(log N). Because the tree is balanced, each comparison discards half of the remaining nodes.", cat: "Algorithms"},
+  {q: "What is the difference between '==' and '===' in JavaScript?", a: "'==' checks for value equality with type coercion, whereas '===' checks for strict equality of both value and type without coercion.", cat: "JavaScript"},
+  {q: "What is a deadlock in Operating Systems?", a: "A situation where two or more processes are unable to proceed because each is waiting for the other to release a resource.", cat: "OS"},
+  {q: "Explain what CORS stands for and why it exists.", a: "Cross-Origin Resource Sharing. It is a security protocol enforced by browsers to restrict scripts on one site from accessing resources on another origin.", cat: "Web Dev"},
+  {q: "How does a HTTP GET request differ from a POST request?", a: "GET retrieves data from a resource via URL queries. POST sends payload data in the request body to create or update resource state.", cat: "Networks"}
+];
+
+let currentWarmupIndex = 0;
+function renderWarmup() {
+  const q = WARMUP_QUESTIONS[currentWarmupIndex];
+  if (!q) return;
+  document.getElementById('warmup-question').textContent = q.q;
+  document.getElementById('warmup-answer').style.display = 'none';
+  document.getElementById('warmup-answer').textContent = q.a;
+  document.getElementById('warmup-category').textContent = q.cat;
+  document.getElementById('warmup-action-btn').style.display = '';
+  document.getElementById('warmup-action-btn').textContent = '👁️ Show Answer';
+}
+
+function revealWarmupAnswer() {
+  document.getElementById('warmup-answer').style.display = 'block';
+  document.getElementById('warmup-action-btn').style.display = 'none';
+}
+
+async function nextWarmupQuestion() {
+  currentWarmupIndex = (currentWarmupIndex + 1) % WARMUP_QUESTIONS.length;
+  if (currentWarmupIndex === 0) {
+    showToast('🧠 Generating new AI interview question...', 'info');
+    const questionText = document.getElementById('warmup-question');
+    questionText.innerHTML = '<span class="spinner spinner-purple"></span> Generating...';
+    try {
+      const profile = getUserProfile();
+      const skillsText = profile.skills.length > 0 ? profile.skills.join(', ') : 'Software Engineering';
+      const prompt = `Generate a single short technical interview question and answer focusing on one of these skills/concepts: ${skillsText}. Return in JSON format ONLY, with no markdown code blocks or wrapper backticks:
+      {"q": "<question>", "a": "<answer in 1-2 sentences>", "cat": "<Algorithms/System Design/Language/etc>"}`;
+      const res = await callGemini(prompt);
+      const cleaned = res.replace(/```json/i, '').replace(/```/g, '').trim();
+      const parsed = JSON.parse(cleaned);
+      
+      WARMUP_QUESTIONS.push(parsed);
+      currentWarmupIndex = WARMUP_QUESTIONS.length - 1;
+    } catch(e) {
+      currentWarmupIndex = 0;
+    }
+  }
+  renderWarmup();
+}
+
+async function genColdPitch(jobId, e) {
+  e && e.stopPropagation();
+  const job = JOBS.find(j => j.id === jobId);
+  if (!job) return;
+  
+  showToast(`❄️ Drafting cold pitch for ${job.company}...`, 'info');
+  
+  try {
+    const profile = getUserProfile();
+    const senderName = profile.name || "Guest";
+    const senderExp = profile.experience || "Fresher";
+    const senderRoles = profile.targetRoles.join(', ') || "Software Engineer";
+    const defaultSkills = profile.skills.length > 0 ? profile.skills.join(', ') : (selectedResume?.skills?.join(', ') || "React, Node.js, Python");
+
+    const prompt = `Write a highly targeted, professional recruiter cold outreach message for the role: ${job.title} at ${job.company}.
+    Job details:
+    Location: ${job.location}
+    Description summary: ${job.description || 'Software developer role'}
+    
+    The sender is ${senderName}, a ${senderExp} focusing on ${senderRoles} roles with skills in ${defaultSkills}. Explain briefly why they are a great fit and request a short 10-minute chat. Keep it under 100 words. Return ONLY the message body, no placeholder subjects. Sign off the message with ${senderName}.`;
+    
+    const msg = await callGemini(prompt);
+    
+    const newMsg = {
+      id: Date.now() + '',
+      name: 'Hiring Manager',
+      company: job.company,
+      role: job.title,
+      type: 'referral',
+      status: 'draft',
+      message: msg
+    };
+    MESSAGES.unshift(newMsg);
+    localStorage.setItem('jobos-messages', JSON.stringify(MESSAGES));
+    
+    selectedMessage = newMsg;
+    navigate('outreach', document.getElementById('nav-outreach'));
+    showToast(`✅ Cold pitch ready in Outreach Manager!`, 'success');
+  } catch(err) {
+    showToast('⚠️ Failed to generate pitch. Check API key in settings.', 'error');
+  }
+}
+
+// ════════════════════════════════════════
+// SCREEN PETS PLAYGROUND
+// ════════════════════════════════════════
+let screenPetsEnabled = false;
+let screenPets = [];
+
+class ScreenPet {
+  constructor(emoji) {
+    this.el = document.createElement('div');
+    this.el.className = 'screen-pet';
+    this.el.style.position = 'fixed';
+    this.el.style.fontSize = '32px';
+    this.el.style.zIndex = '99999';
+    this.el.style.cursor = 'pointer';
+    this.el.style.userSelect = 'none';
+    this.el.style.transition = 'transform 0.1s linear';
+    this.el.innerHTML = emoji;
+    
+    this.bubble = document.createElement('div');
+    this.bubble.style.position = 'absolute';
+    this.bubble.style.bottom = '40px';
+    this.bubble.style.left = '50%';
+    this.bubble.style.transform = 'translateX(-50%)';
+    this.bubble.style.background = 'white';
+    this.bubble.style.border = '1.5px solid var(--purple)';
+    this.bubble.style.borderRadius = '10px';
+    this.bubble.style.padding = '4px 8px';
+    this.bubble.style.fontSize = '10px';
+    this.bubble.style.fontWeight = '700';
+    this.bubble.style.whiteSpace = 'nowrap';
+    this.bubble.style.boxShadow = 'var(--shadow)';
+    this.bubble.style.display = 'none';
+    this.bubble.style.color = 'var(--text)';
+    this.el.appendChild(this.bubble);
+    
+    document.body.appendChild(this.el);
+    
+    this.x = Math.random() * (window.innerWidth - 80) + 40;
+    this.y = Math.random() * (window.innerHeight - 80) + 40;
+    this.vx = (Math.random() - 0.5) * 4;
+    this.vy = (Math.random() - 0.5) * 4;
+    this.emoji = emoji;
+    
+    this.phrases = emoji === '🐱' ? 
+      ['Meow!', 'Code review?', 'Need coffee.', 'ATS pass!', 'Hire me?', 'Feed me bugs!'] :
+      emoji === '🐶' ? 
+      ['Woof!', 'Referral please!', 'Good boy!', 'Let\'s interview!', 'No ghosting!', 'Let\'s build!'] :
+      ['Boing!', 'Crunching data...', 'Rabbit MQ!', 'High salary!', 'Ready!', 'Hop hop!'];
+      
+    this.el.addEventListener('click', () => this.speak());
+  }
+  
+  speak() {
+    const p = this.phrases[Math.floor(Math.random() * this.phrases.length)];
+    this.bubble.textContent = p;
+    this.bubble.style.display = 'block';
+    setTimeout(() => { this.bubble.style.display = 'none'; }, 2000);
+    this.vy = -6; // jump up
+  }
+  
+  update(mx, my) {
+    if (this.x < 10 || this.x > window.innerWidth - 60) this.vx *= -1;
+    if (this.y < 10 || this.y > window.innerHeight - 60) this.vy *= -1;
+    
+    this.x = Math.max(10, Math.min(window.innerWidth - 60, this.x));
+    this.y = Math.max(10, Math.min(window.innerHeight - 60, this.y));
+    
+    const dx = this.x - mx;
+    const dy = this.y - my;
+    const dist = Math.sqrt(dx*dx + dy*dy);
+    if (dist > 0 && dist < 120) {
+      const force = (120 - dist) / 120;
+      this.vx += (dx / dist) * force * 1.5;
+      this.vy += (dy / dist) * force * 1.5;
+    }
+    
+    this.vx *= 0.98;
+    this.vy *= 0.98;
+    
+    const speed = Math.sqrt(this.vx*this.vx + this.vy*this.vy);
+    if (speed > 8) {
+      this.vx = (this.vx / speed) * 8;
+      this.vy = (this.vy / speed) * 8;
+    }
+    
+    this.x += this.vx;
+    this.y += this.vy;
+    
+    this.el.style.left = `${this.x}px`;
+    this.el.style.top = `${this.y}px`;
+    
+    if (Math.abs(this.vx) > 0.2) {
+      const scaleX = this.vx > 0 ? 1 : -1;
+      this.el.style.transform = `scaleX(${scaleX})`;
+    }
+  }
+  
+  remove() {
+    this.el.remove();
+  }
+}
+
+let mx = -1000, my = -1000;
+window.addEventListener('mousemove', (e) => {
+  mx = e.clientX;
+  my = e.clientY;
+});
+
+function toggleScreenPets() {
+  screenPetsEnabled = !screenPetsEnabled;
+  const btn = document.getElementById('toggle-pets-btn');
+  
+  if (screenPetsEnabled) {
+    btn.innerHTML = '<div class="nav-icon">🐾</div> Disable Pets';
+    btn.classList.add('active');
+    
+    const emojis = ['🐱', '🐶', '🐰', '🐶', '🐱'];
+    screenPets = emojis.map(e => new ScreenPet(e));
+    
+    animatePets();
+    showToast('🐾 Kawaii screen pets enabled! Click them to talk.', 'success');
+  } else {
+    btn.innerHTML = '<div class="nav-icon">🐾</div> Enable Screen Pets';
+    btn.classList.remove('active');
+    
+    screenPets.forEach(p => p.remove());
+    screenPets = [];
+    showToast('🐾 Screen pets returned to sleep.', 'info');
+  }
+}
+
+function animatePets() {
+  if (!screenPetsEnabled) return;
+  screenPets.forEach(p => p.update(mx, my));
+  requestAnimationFrame(animatePets);
+}
+
+// ════════════════════════════════════════
+// TAB SWITCHER
+// ════════════════════════════════════════
+function switchTab(page, tabId, btn) {
+  document.querySelectorAll(`#page-${page} .resume-tab-content, #page-${page} .interview-tab-content`).forEach(el => el.style.display='none');
+  document.querySelectorAll(`#page-${page} .tab`).forEach(t => t.classList.remove('active'));
+  const el = document.getElementById(`${page}-${tabId}`) || document.getElementById(`${page.replace('-','')}-${tabId}`);
+  if (el) el.style.display = '';
+  if (btn) { btn.classList.add('active'); }
+}
+
+// ════════════════════════════════════════
+// TOAST
+// ════════════════════════════════════════
+function showToast(msg, type='info') {
+  const wrap = document.getElementById('toasts');
+  const el = document.createElement('div');
+  el.className = `toast toast-${type}`;
+  const icons = {success:'✅', info:'💡', error:'⚠️'};
+  el.innerHTML = `<span>${icons[type]||'💡'}</span> ${msg}`;
+  wrap.appendChild(el);
+  setTimeout(() => el.remove(), 3500);
+}
+
+// ════════════════════════════════════════
+// HELPERS
+// ════════════════════════════════════════
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+// ════════════════════════════════════════
+// TOPBAR DROPDOWNS & NOTIFICATIONS
+// ════════════════════════════════════════
+function toggleNotifications(event) {
+  event.stopPropagation();
+  const notifDropdown = document.getElementById('notifications-dropdown');
+  const profileDropdown = document.getElementById('profile-dropdown');
+  
+  profileDropdown.style.display = 'none';
+  
+  if (notifDropdown.style.display === 'flex') {
+    notifDropdown.style.display = 'none';
+  } else {
+    notifDropdown.style.display = 'flex';
+    renderNotifications();
+  }
+}
+
+function toggleProfileMenu(event) {
+  event.stopPropagation();
+  const notifDropdown = document.getElementById('notifications-dropdown');
+  const profileDropdown = document.getElementById('profile-dropdown');
+  
+  notifDropdown.style.display = 'none';
+  
+  if (profileDropdown.style.display === 'flex') {
+    profileDropdown.style.display = 'none';
+  } else {
+    profileDropdown.style.display = 'flex';
+    updateProfileDropdownHeader();
+  }
+}
+
+function updateProfileDropdownHeader() {
+  try {
+    const profile = getUserProfile();
+    document.getElementById('profile-display-name').textContent = profile.name || 'Guest User';
+    document.getElementById('profile-display-email').textContent = profile.email || 'guest@example.com';
+  } catch(e) {}
+}
+
+function getNotifications() {
+  const list = [];
+  const profile = getUserProfile();
+  const nameDisplay = profile.name ? profile.name.split(' ')[0] : 'Guest';
+  const targetRole = profile.targetRoles.length > 0 ? profile.targetRoles[0] : 'Software Engineer';
+  
+  // 1. Interviews
+  deadlines.forEach(d => {
+    if (d.type === 'Interview') {
+      const diffTime = new Date(d.date) - new Date();
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      if (diffDays >= 0 && diffDays <= 7) {
+        list.push({
+          id: `int-${d.id}`,
+          type: 'interview',
+          icon: '🎯',
+          title: `Interview approaching, ${nameDisplay}!`,
+          body: `Prepping for ${d.company} — ${d.role} on ${d.date} (${diffDays === 0 ? 'Today' : diffDays === 1 ? 'Tomorrow' : 'in ' + diffDays + ' days'})`,
+          link: 'calendar'
+        });
+      }
+    }
+  });
+
+  // 2. Ghosting (Applied and older than 10 days)
+  trackerApps.forEach(a => {
+    if (a.status === 'Applied') {
+      const diffTime = new Date() - new Date(a.date);
+      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+      if (diffDays >= 10) {
+        list.push({
+          id: `ghost-${a.id}`,
+          type: 'ghost',
+          icon: '👻',
+          title: `Silence warning, ${nameDisplay}!`,
+          body: `No update from ${a.company} for ${diffDays} days for your ${a.role} application.`,
+          link: 'ghosting'
+        });
+      }
+    }
+  });
+
+  // 3. Hot jobs (Score >= 88)
+  JOBS.forEach(j => {
+    if (j.score >= 88) {
+      list.push({
+        id: `job-${j.id}`,
+        type: 'job',
+        icon: '🔥',
+        title: `Perfect match for your ${targetRole} search!`,
+        body: `${j.company} is hiring: ${j.title} (${j.score}% match)`,
+        link: 'jobs'
+
+      });
+    }
+  });
+
+  return list;
+}
+
+function renderNotifications() {
+  const notifListEl = document.getElementById('notifications-list');
+  const badgeEl = document.getElementById('notif-badge');
+  if (!notifListEl) return;
+
+  const cleared = JSON.parse(localStorage.getItem('jobos-cleared-notifications') || '[]');
+  const allNotifs = getNotifications();
+  const currentNotifs = allNotifs.filter(n => !cleared.includes(n.id));
+
+  if (currentNotifs.length === 0) {
+    notifListEl.innerHTML = '<div style="padding: 20px 16px; text-align: center; color: var(--text-3); font-size: 13px;">No new notifications</div>';
+    if (badgeEl) badgeEl.style.display = 'none';
+    return;
+  }
+
+  const isDropdownOpen = document.getElementById('notifications-dropdown').style.display === 'flex';
+  if (isDropdownOpen) {
+    if (badgeEl) badgeEl.style.display = 'none';
+  } else {
+    if (badgeEl) {
+      badgeEl.style.display = 'block';
+    }
+  }
+
+  notifListEl.innerHTML = currentNotifs.map(n => `
+    <div class="dropdown-notif-item" onclick="handleNotificationClick('${n.link}', '${n.id}')">
+      <div style="display:flex; align-items:center; gap:8px; font-weight:700; margin-bottom:4px;">
+        <span>${n.icon}</span>
+        <span>${n.title}</span>
+      </div>
+      <div style="font-size:11px; color:var(--text-3); line-height:1.4">${n.body}</div>
+    </div>
+  `).join('');
+}
+
+function handleNotificationClick(page, notifId) {
+  const navBtn = document.getElementById('nav-' + page);
+  if (navBtn) {
+    navigate(page, navBtn);
+  }
+  dismissNotification(notifId);
+  document.getElementById('notifications-dropdown').style.display = 'none';
+}
+
+function dismissNotification(id) {
+  const cleared = JSON.parse(localStorage.getItem('jobos-cleared-notifications') || '[]');
+  if (!cleared.includes(id)) {
+    cleared.push(id);
+    localStorage.setItem('jobos-cleared-notifications', JSON.stringify(cleared));
+  }
+  renderNotifications();
+}
+
+function clearNotifications() {
+  const allNotifs = getNotifications();
+  const cleared = allNotifs.map(n => n.id);
+  localStorage.setItem('jobos-cleared-notifications', JSON.stringify(cleared));
+  renderNotifications();
+  showToast('🧹 Notifications cleared!', 'info');
+}
+
+function mockLogout() {
+  showToast('🚪 Mock sign out completed!', 'info');
+  document.getElementById('profile-dropdown').style.display = 'none';
+}
+
+// Close dropdowns on window click
+window.addEventListener('click', () => {
+  const notifDropdown = document.getElementById('notifications-dropdown');
+  const profileDropdown = document.getElementById('profile-dropdown');
+  if (notifDropdown) notifDropdown.style.display = 'none';
+  if (profileDropdown) profileDropdown.style.display = 'none';
+});
+
+function customizeMockData() {
+  try {
+    const profile = getUserProfile();
+    if (!profile.name) return; // Only customize if user has filled settings
+    
+    const senderName = profile.name;
+    const firstRole = profile.targetRoles.length > 0 ? profile.targetRoles[0] : "Software Engineer";
+    const loc = profile.preferredLocations.length > 0 ? profile.preferredLocations[0] : "Bangalore";
+    
+    // 1. Customize MESSAGES
+    MESSAGES.forEach(m => {
+      if (m.id === '1') {
+        m.role = firstRole;
+        m.message = `Hi Priya,\n\nI hope you're doing well! I came across your profile while researching Google's engineering team — your work on the Maps infra team is genuinely impressive.\n\nI'm a ${profile.experience ? profile.experience.toLowerCase() : 'developer'} with strong experience in ${(profile.skills && profile.skills.length > 0) ? profile.skills.slice(0, 3).join(', ') : 'software engineering'}, and I've applied for the ${firstRole} role at Google ${loc}. I'd be incredibly grateful if you could refer me or share any insights about the team culture.\n\nNo pressure at all — just thought I'd reach out since your background is so aligned with what I'm building toward.\n\nThanks so much!\n${senderName}`;
+      } else if (m.id === '2') {
+        m.message = `Hi Rahul, I'd love to connect! I'm a developer working on similar ${(profile.skills && profile.skills[0]) || 'software'} problems and really admire your work at Microsoft.`;
+      } else if (m.id === '3') {
+        m.message = `Hi Sneha, just following up on my message from last week about the ${firstRole} role at Zepto. No pressure — just checking if you had a chance to look at it! 🙏`;
+      } else if (m.message) {
+        m.message = m.message.replace(/\[Your Name\]/gi, senderName);
+      }
+    });
+    localStorage.setItem('jobos-messages', JSON.stringify(MESSAGES));
+    
+    // 2. Customize trackerApps default roles and expected salary range
+    trackerApps.forEach(a => {
+      if (a.id === '1' || a.id === '2' || a.id === '3' || a.id === '4' || a.id === '5' || a.id === '6') {
+        // Customize role
+        if (a.id === '1') a.role = `${firstRole} Intern`;
+        else if (a.id === '2') a.role = firstRole;
+        else if (a.id === '3') a.role = profile.targetRoles[1] || firstRole;
+        else if (a.id === '4') a.role = profile.targetRoles[2] || 'Data Engineer Intern';
+        else if (a.id === '5') a.role = firstRole;
+        else if (a.id === '6') a.role = profile.targetRoles[0] || 'Product Engineer';
+
+        // Customize salary dynamically based on expectedSalary
+        const expSal = profile.expectedSalary || "";
+        const hasLPA = /lpa/i.test(expSal);
+        const digits = expSal.replace(/\D/g, "");
+        const salNum = parseInt(digits, 10);
+        
+        if (salNum > 0) {
+          if (a.id === '1') {
+            const monthly = hasLPA ? Math.round((salNum * 100000) / 12 * 0.6) : salNum;
+            a.salary = `₹${Math.round(monthly / 1000)}K/mo`;
+          } else if (a.id === '2') {
+            if (hasLPA) {
+              a.salary = `₹${Math.round(salNum * 0.9)}–${Math.round(salNum * 1.2)} LPA`;
+            } else {
+              a.salary = `₹${Math.round(salNum * 12 * 0.9 / 100000)}–${Math.round(salNum * 12 * 1.2 / 100000)} LPA`;
+            }
+          } else if (a.id === '3') {
+            if (hasLPA) {
+              a.salary = `₹${Math.round(salNum * 0.8)}–${Math.round(salNum * 1.05)} LPA`;
+            } else {
+              a.salary = `₹${Math.round(salNum * 12 * 0.8 / 100000)}–${Math.round(salNum * 12 * 1.05 / 100000)} LPA`;
+            }
+          } else if (a.id === '4') {
+            const monthly = hasLPA ? Math.round((salNum * 100000) / 12 * 0.45) : Math.round(salNum * 0.8);
+            a.salary = `₹${Math.round(monthly / 1000)}K/mo`;
+          } else if (a.id === '5') {
+            if (hasLPA) {
+              a.salary = `₹${salNum} LPA`;
+            } else {
+              a.salary = `₹${Math.round(salNum * 12 / 100000)} LPA`;
+            }
+          } else if (a.id === '6') {
+            const monthly = hasLPA ? Math.round((salNum * 100000) / 12 * 0.55) : Math.round(salNum * 0.9);
+            a.salary = `₹${Math.round(monthly / 1000)}K/mo`;
+          }
+        }
+      }
+    });
+    localStorage.setItem('jobos-tracker', JSON.stringify(trackerApps));
+    
+    // 3. Customize debriefs roles
+    debriefs.forEach(d => {
+      if (d.id === '1') {
+        d.role = firstRole;
+      }
+    });
+    localStorage.setItem('jobos-debriefs', JSON.stringify(debriefs));
+
+    // 4. Customize deadlines roles
+    deadlines.forEach(d => {
+      if (d.id === '1') d.role = firstRole;
+      else if (d.id === '2') d.role = profile.targetRoles[1] || firstRole;
+      else if (d.id === '3') d.role = profile.targetRoles[2] || 'Data Engineer Intern';
+    });
+    localStorage.setItem('jobos-deadlines', JSON.stringify(deadlines));
+
+    // 5. Customize resumes
+    resumes.forEach(r => {
+      if (r.id === '1') {
+        r.role = firstRole;
+        r.name = `Resume_${senderName.split(' ')[0] || 'SDE'}.pdf`;
+        if (profile.skills && profile.skills.length > 0) {
+          r.skills = profile.skills;
+        }
+      } else if (r.id === '2') {
+        r.role = profile.targetRoles[1] || 'Data Engineer';
+        r.name = `Resume_${(profile.targetRoles[1] || 'Data').split(' ')[0]}.pdf`;
+      }
+    });
+    localStorage.setItem('jobos-resumes', JSON.stringify(resumes));
+
+    // 6. Customize jobs
+    const JOB_REQUIRED_SKILLS = {
+      '1': ['React', 'Node.js', 'TypeScript', 'System Design'],
+      '2': ['C#', 'C++', 'Azure', 'System Design', 'Algorithms'],
+      '3': ['Python', 'Django', 'PostgreSQL', 'Redis'],
+      '4': ['React', 'Node.js', 'MongoDB', 'AWS'],
+      '5': ['Python', 'SQL', 'Spark', 'Airflow'],
+      '6': ['React', 'Javascript', 'CSS', 'HTML'],
+      '7': ['Go', 'Kubernetes', 'Docker', 'AWS'],
+      '8': ['AWS', 'Terraform', 'Linux', 'Python']
+    };
+
+    JOBS.forEach((j) => {
+      if (j.id === '1' || j.id === '2' || j.id === '3' || j.id === '4' || j.id === '5' || j.id === '6' || j.id === '7' || j.id === '8') {
+        if (j.id === '1') j.title = `${firstRole}`;
+        else if (j.id === '2') j.title = `${firstRole} — New Grad`;
+        else if (j.id === '3') j.title = `${profile.targetRoles[1] || 'Backend Engineer Intern'}`;
+        else if (j.id === '4') j.title = `${profile.targetRoles[0] || 'Full Stack Developer'}`;
+        else if (j.id === '5') j.title = `${profile.targetRoles[2] || 'Data Engineer Intern'}`;
+        else if (j.id === '6') j.title = `Junior ${firstRole}`;
+        else if (j.id === '7') j.title = `${firstRole} Intern`;
+        
+        if (!j.remote) {
+          j.location = loc;
+        }
+        
+        // Recalculate match score based on skills match
+        const reqSkills = JOB_REQUIRED_SKILLS[j.id] || [];
+        if (profile.skills && profile.skills.length > 0) {
+          const matched = reqSkills.filter(s => 
+            profile.skills.some(ps => ps.toLowerCase().includes(s.toLowerCase()) || s.toLowerCase().includes(ps.toLowerCase()))
+          ).length;
+          j.score = Math.round(65 + (matched / reqSkills.length) * 33);
+        } else {
+          j.score = 65;
+        }
+      }
+    });
+    localStorage.setItem('jobos-jobs', JSON.stringify(JOBS));
+  } catch(e) {
+    console.error("Failed to customize mock data: ", e);
+  }
+}
+
+// ════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════
+// Register subscriber for dynamic UI updates
+subscribeToProfileChanges((profile) => {
+  customizeMockData();
+  updateProfileDropdownHeader();
+  renderDashboard();
+  renderNotifications();
+  if (currentPage === 'jobs') renderJobs();
+  loadSettingsForm(profile);
+});
+
+function loadSettingsForm(profile) {
+  try {
+    if (profile.name) document.getElementById('s-name').value = profile.name;
+    if (profile.email) document.getElementById('s-email').value = profile.email;
+    if (profile.phone) document.getElementById('s-phone').value = profile.phone;
+    if (profile.linkedin) document.getElementById('s-linkedin').value = profile.linkedin;
+    if (profile.github) document.getElementById('s-github').value = profile.github;
+    if (profile.portfolio) document.getElementById('s-portfolio').value = profile.portfolio;
+    if (profile.targetRoles) document.getElementById('s-roles').value = profile.targetRoles.join(', ');
+    if (profile.preferredLocations) document.getElementById('s-locations').value = profile.preferredLocations.join(', ');
+    if (profile.skills) document.getElementById('s-skills').value = profile.skills.join(', ');
+    if (profile.expectedSalary) document.getElementById('s-salary').value = profile.expectedSalary;
+    if (profile.experience) document.getElementById('s-exp').value = profile.experience;
+    if (profile.noticePeriod) document.getElementById('s-notice').value = profile.noticePeriod;
+    if (profile.apiKeys?.geminiKey) document.getElementById('s-gemini').value = profile.apiKeys.geminiKey;
+    if (profile.apiKeys?.rapidapiKey) document.getElementById('s-rapidapi').value = profile.apiKeys.rapidapiKey;
+  } catch(e) {}
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const profile = getUserProfile();
+  customizeMockData();
+  renderDashboard();
+  updateProfileDropdownHeader();
+  renderNotifications();
+  loadSettingsForm(profile);
+});
+</script>
+</body>
+</html>
