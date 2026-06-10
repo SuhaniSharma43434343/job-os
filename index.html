@@ -40,8 +40,8 @@
             <div style="font-size: 11px; color: var(--text-3);" id="profile-display-email">guest@example.com</div>
           </div>
           <div class="dropdown-item" onclick="navigate('settings', document.getElementById('nav-settings'))">⚙️ Settings</div>
-          <div class="dropdown-item" onclick="navigate('tracker', document.getElementById('nav-tracker'))">📋 Application Tracker</div>
-          <div class="dropdown-item" onclick="navigate('calendar', document.getElementById('nav-calendar'))">📅 Upcoming Deadlines</div>
+          <div class="dropdown-item" onclick="navigate('tracker', document.getElementById('nav-tracker'))" style="display:none;">📋 Application Tracker</div>
+          <div class="dropdown-item" onclick="navigate('calendar', document.getElementById('nav-calendar'))" style="display:none;">📅 Upcoming Deadlines</div>
           <hr style="border: 0; border-top: 1px solid var(--border); margin: 6px 0;" />
           <div class="dropdown-item" style="color: var(--pink); font-weight: bold;" onclick="mockLogout()">🚪 Sign Out</div>
         </div>
@@ -66,44 +66,44 @@
     <button class="nav-item" onclick="navigate('resume', this)" id="nav-resume">
       <div class="nav-icon">📄</div> Resume Vault
     </button>
-    <button class="nav-item" onclick="navigate('outreach', this)" id="nav-outreach">
+    <button class="nav-item" onclick="navigate('outreach', this)" id="nav-outreach" style="display:none;">
       <div class="nav-icon">🐶</div> Outreach
       <span class="nav-badge">3</span>
     </button>
-    <button class="nav-item" onclick="navigate('interview', this)" id="nav-interview">
+    <button class="nav-item" onclick="navigate('interview', this)" id="nav-interview" style="display:none;">
       <div class="nav-icon">🎯</div> Interview Prep
     </button>
-    <button class="nav-item" onclick="navigate('debrief', this)" id="nav-debrief">
+    <button class="nav-item" onclick="navigate('debrief', this)" id="nav-debrief" style="display:none;">
       <div class="nav-icon">📊</div> Post-Interview Intelligence
     </button>
-    <button class="nav-item" onclick="navigate('tracker', this)" id="nav-tracker">
+    <button class="nav-item" onclick="navigate('tracker', this)" id="nav-tracker" style="display:none;">
       <div class="nav-icon">📋</div> Tracker
     </button>
     <button class="nav-item" onclick="navigate('settings', this)" id="nav-settings">
       <div class="nav-icon">⚙️</div> Settings
     </button>
 
-    <div style="font-size:10px; font-weight:800; color:var(--text-3); text-transform:uppercase; letter-spacing:.08em; padding:10px 16px 4px">⚡ Power-Ups</div>
-    <button class="nav-item" onclick="navigate('roast', this)" id="nav-roast">
+    <div style="font-size:10px; font-weight:800; color:var(--text-3); text-transform:uppercase; letter-spacing:.08em; padding:10px 16px 4px; display:none;">⚡ Power-Ups</div>
+    <button class="nav-item" onclick="navigate('roast', this)" id="nav-roast" style="display:none;">
       <div class="nav-icon">💀</div> Resume Roast
     </button>
-    <button class="nav-item" onclick="navigate('jddecoder', this)" id="nav-jddecoder">
+    <button class="nav-item" onclick="navigate('jddecoder', this)" id="nav-jddecoder" style="display:none;">
       <div class="nav-icon">🔍</div> JD Decoder
     </button>
-    <button class="nav-item" onclick="navigate('negotiate', this)" id="nav-negotiate">
+    <button class="nav-item" onclick="navigate('negotiate', this)" id="nav-negotiate" style="display:none;">
       <div class="nav-icon">🎭</div> Offer Negotiator
     </button>
-    <button class="nav-item" onclick="navigate('calendar', this)" id="nav-calendar">
+    <button class="nav-item" onclick="navigate('calendar', this)" id="nav-calendar" style="display:none;">
       <div class="nav-icon">📅</div> Deadline Calendar
     </button>
-    <button class="nav-item" onclick="navigate('ghosting', this)" id="nav-ghosting">
+    <button class="nav-item" onclick="navigate('ghosting', this)" id="nav-ghosting" style="display:none;">
       <div class="nav-icon">👻</div> Ghosting Detector
       <span class="nav-badge" id="ghost-badge">2</span>
     </button>
-    <button class="nav-item" onclick="navigate('abtest', this)" id="nav-abtest">
+    <button class="nav-item" onclick="navigate('abtest', this)" id="nav-abtest" style="display:none;">
       <div class="nav-icon">🆚</div> Resume A/B Test
     </button>
-    <button class="nav-item" onclick="toggleScreenPets()" id="toggle-pets-btn" style="margin-top:10px;">
+    <button class="nav-item" onclick="toggleScreenPets()" id="toggle-pets-btn" style="margin-top:10px; display:none;">
       <div class="nav-icon">🐾</div> Enable Screen Pets
     </button>
 
@@ -843,14 +843,14 @@ const RAPIDAPI_KEY = 'dd07b80f1fmshec85b5599b446a9p1af665jsnbc0f328f1e00';
 let JOBS = JSON.parse(localStorage.getItem('jobos-jobs') || '[]');
 if (JOBS.length === 0) {
   JOBS = [
-    {id:'1', title:'Software Development Engineer Intern', company:'Google', logo:'G', logoColor:'#4285F4', logoBg:'#E8F0FE', location:'Bangalore', salary:'₹80K/mo', platform:'LinkedIn', type:'Internship', posted:'2 hrs ago', score:94, remote:false},
-    {id:'2', title:'Software Engineer — New Grad', company:'Microsoft', logo:'M', logoColor:'#00A4EF', logoBg:'#E3F6FF', location:'Hyderabad', salary:'₹25–35 LPA', platform:'Indeed', type:'Full-time', posted:'5 hrs ago', score:88, remote:true},
-    {id:'3', title:'Backend Engineer Intern', company:'Zepto', logo:'Z', logoColor:'#8B5CF6', logoBg:'#EDE9FE', location:'Mumbai', salary:'₹50K/mo', platform:'Internshala', type:'Internship', posted:'8 hrs ago', score:82, remote:false},
-    {id:'4', title:'Full Stack Developer', company:'Razorpay', logo:'R', logoColor:'#2C9B7C', logoBg:'#D1FAE5', location:'Bangalore', salary:'₹18–28 LPA', platform:'Naukri', type:'Full-time', posted:'12 hrs ago', score:79, remote:true},
-    {id:'5', title:'Data Engineer Intern', company:'Swiggy', logo:'S', logoColor:'#FC8019', logoBg:'#FEF3C7', location:'Bangalore', salary:'₹45K/mo', platform:'Glassdoor', type:'Internship', posted:'1 day ago', score:76, remote:false},
-    {id:'6', title:'Junior Software Engineer', company:'Remote First', logo:'⌨️', logoColor:'#8B7CF6', logoBg:'#EDE9FE', location:'Remote', salary:'$40–60K/yr', platform:'Remote', type:'Remote', posted:'1 day ago', score:71, remote:true},
-    {id:'7', title:'Product Engineer Intern', company:'CRED', logo:'C', logoColor:'#1A1A2E', logoBg:'#E8E8F0', location:'Bangalore', salary:'₹60K/mo', platform:'LinkedIn', type:'Internship', posted:'2 days ago', score:68, remote:false},
-    {id:'8', title:'Cloud Engineer', company:'Amazon AWS', logo:'A', logoColor:'#FF9900', logoBg:'#FFF3CD', location:'Hyderabad', salary:'₹22–32 LPA', platform:'Indeed', type:'Full-time', posted:'2 days ago', score:65, remote:false},
+    {id:'1', title:'Software Development Engineer Intern', company:'Google', logo:'G', logoColor:'#4285F4', logoBg:'#E8F0FE', location:'Bangalore', salary:'₹80K/mo', platform:'LinkedIn', type:'Internship', posted:'2 hrs ago', score:94, remote:false, applyLink: 'https://careers.google.com'},
+    {id:'2', title:'Software Engineer — New Grad', company:'Microsoft', logo:'M', logoColor:'#00A4EF', logoBg:'#E3F6FF', location:'Hyderabad', salary:'₹25–35 LPA', platform:'Indeed', type:'Full-time', posted:'5 hrs ago', score:88, remote:true, applyLink: 'https://careers.microsoft.com'},
+    {id:'3', title:'Backend Engineer Intern', company:'Zepto', logo:'Z', logoColor:'#8B5CF6', logoBg:'#EDE9FE', location:'Mumbai', salary:'₹50K/mo', platform:'Internshala', type:'Internship', posted:'8 hrs ago', score:82, remote:false, applyLink: 'https://www.zeptonow.com/careers'},
+    {id:'4', title:'Full Stack Developer', company:'Razorpay', logo:'R', logoColor:'#2C9B7C', logoBg:'#D1FAE5', location:'Bangalore', salary:'₹18–28 LPA', platform:'Naukri', type:'Full-time', posted:'12 hrs ago', score:79, remote:true, applyLink: 'https://razorpay.com/jobs'},
+    {id:'5', title:'Data Engineer Intern', company:'Swiggy', logo:'S', logoColor:'#FC8019', logoBg:'#FEF3C7', location:'Bangalore', salary:'₹45K/mo', platform:'Glassdoor', type:'Internship', posted:'1 day ago', score:76, remote:false, applyLink: 'https://www.swiggy.com/careers'},
+    {id:'6', title:'Junior Software Engineer', company:'Remote First', logo:'⌨️', logoColor:'#8B7CF6', logoBg:'#EDE9FE', location:'Remote', salary:'$40–60K/yr', platform:'Remote', type:'Remote', posted:'1 day ago', score:71, remote:true, applyLink: 'https://remotefirst.com'},
+    {id:'7', title:'Product Engineer Intern', company:'CRED', logo:'C', logoColor:'#1A1A2E', logoBg:'#E8E8F0', location:'Bangalore', salary:'₹60K/mo', platform:'LinkedIn', type:'Internship', posted:'2 days ago', score:68, remote:false, applyLink: 'https://cred.club/careers'},
+    {id:'8', title:'Cloud Engineer', company:'Amazon AWS', logo:'A', logoColor:'#FF9900', logoBg:'#FFF3CD', location:'Hyderabad', salary:'₹22–32 LPA', platform:'Indeed', type:'Full-time', posted:'2 days ago', score:65, remote:false, applyLink: 'https://aws.amazon.com/careers'},
   ];
 }
 
@@ -1028,7 +1028,10 @@ function renderDashboard() {
         <div style="font-weight:700; font-size:13px">${j.company} — ${j.title.split(' ')[0]} ${j.title.split(' ')[1]||''}</div>
         <div style="font-size:11px; color:var(--text-3)">${j.score}% Match</div>
       </div>
-      <button class="btn btn-sm ${j.score>=80?'btn-primary':'btn-pink'}" onclick="showToast('🚀 Preparing application for ${j.company}!','success')">${j.score>=80?'Apply 🐾':'Save 🐾'}</button>
+      <div style="display:flex; gap:6px;">
+        <a class="btn btn-sm btn-ghost" href="${j.applyLink || 'https://www.linkedin.com/jobs'}" target="_blank" style="text-decoration:none; display:inline-flex; align-items:center; justify-content:center;">🔗 Apply Link</a>
+        <button class="btn btn-sm ${j.score>=80?'btn-primary':'btn-pink'}" onclick="showToast('🚀 Preparing application for ${j.company}!','success')">${j.score>=80?'Apply 🐾':'Save 🐾'}</button>
+      </div>
     </div>
   `).join('');
 
@@ -1203,8 +1206,9 @@ function renderJobList() {
               <span style="font-size:11px; color:var(--text-3)">${j.posted}</span>
             </div>
           </div>
-          <div style="text-align:right">
+          <div style="text-align:right; display:flex; flex-direction:column; align-items:flex-end; gap:8px;">
             <div class="score-pill ${scoreClass(j.score)}">${j.score}%</div>
+            <a class="btn btn-xs btn-primary" href="${j.applyLink || 'https://www.linkedin.com/jobs'}" target="_blank" onclick="event.stopPropagation()" style="text-decoration:none; display:inline-flex; align-items:center; justify-content:center;">🔗 Apply Link</a>
           </div>
         </div>
         <div id="job-expand-${j.id}" style="display:none; margin-top:12px; padding-top:12px; border-top:1px solid var(--border)">
@@ -3282,6 +3286,17 @@ function customizeMockData() {
       '8': ['AWS', 'Terraform', 'Linux', 'Python']
     };
 
+    const mockLinks = {
+      '1': 'https://careers.google.com',
+      '2': 'https://careers.microsoft.com',
+      '3': 'https://www.zeptonow.com/careers',
+      '4': 'https://razorpay.com/jobs',
+      '5': 'https://www.swiggy.com/careers',
+      '6': 'https://remotefirst.com',
+      '7': 'https://cred.club/careers',
+      '8': 'https://aws.amazon.com/careers'
+    };
+
     JOBS.forEach((j) => {
       if (j.id === '1' || j.id === '2' || j.id === '3' || j.id === '4' || j.id === '5' || j.id === '6' || j.id === '7' || j.id === '8') {
         if (j.id === '1') j.title = `${firstRole}`;
@@ -3291,6 +3306,8 @@ function customizeMockData() {
         else if (j.id === '5') j.title = `${profile.targetRoles[2] || 'Data Engineer Intern'}`;
         else if (j.id === '6') j.title = `Junior ${firstRole}`;
         else if (j.id === '7') j.title = `${firstRole} Intern`;
+        
+        j.applyLink = mockLinks[j.id] || 'https://www.linkedin.com/jobs';
         
         if (!j.remote) {
           j.location = loc;
